@@ -72,12 +72,12 @@ def cmsindex(req):
 
 
 
-'''def publisherdate(req):
-    data = gridDataModel()
-    data.setTotal(10)
-    #print getAllPublisher()
-    data.setRows(getAllPublisher())
-    return HttpResponse(json.dumps(data.__dict__))'''
+#'''def publisherdate(req):
+#    data = gridDataModel()
+#    data.setTotal(10)
+#    #print getAllPublisher()
+#    data.setRows(getAllPublisher())
+#    return HttpResponse(json.dumps(data.__dict__))'''
 
 
 def indexleft(req):

@@ -8,11 +8,11 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    url(r'back_user/searchform/$','back_user.views.searchform'),
-    url(r'back_user/search/$','back_user.views.search'),
-    url(r'back_user/index/$',      'back_user.views.index'),
-    url(r'back_user/demo/$','back_user.views.demo'),
-    url(r'back_user/publisherdate/$','back_user.views.publisherdate'),
+#    url(r'back_user/searchform/$','back_user.views.searchform'),
+#    url(r'back_user/search/$','back_user.views.search'),
+#    url(r'back_user/index/$',      'back_user.views.index'),
+#    url(r'back_user/demo/$','back_user.views.demo'),
+#    url(r'back_user/publisherdate/$','back_user.views.publisherdate'),
     url(r'back_user/cmsindex/$','back_user.views.cmsindex'),
     url(r'back_user/indexleft/$','back_user.views.indexleft'),
 

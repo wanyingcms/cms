@@ -62,47 +62,47 @@ class BackuserUserinfo(models.Model):
         db_table = 'backuser_userinfo'
 
 
-class BooksAuthor(models.Model):
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=40)
-    email = models.CharField(max_length=254)
+#class BooksAuthor(models.Model):
+#    first_name = models.CharField(max_length=30)
+#    last_name = models.CharField(max_length=40)
+#    email = models.CharField(max_length=254)
 
-    class Meta:
-        managed = False
-        db_table = 'books_author'
-
-
-class BooksBook(models.Model):
-    title = models.CharField(max_length=100)
-    publication_date = models.DateField()
-    publisher_id = models.IntegerField()
-
-    class Meta:
-        managed = False
-        db_table = 'books_book'
+#    class Meta:
+#        managed = False
+#        db_table = 'books_author'
 
 
-class BooksBookAuthors(models.Model):
-    book_id = models.IntegerField()
-    author_id = models.IntegerField()
+#class BooksBook(models.Model):
+#    title = models.CharField(max_length=100)
+#    publication_date = models.DateField()
+#    publisher_id = models.IntegerField()
 
-    class Meta:
-        managed = False
-        db_table = 'books_book_authors'
-        unique_together = (('book_id', 'author_id'),)
+ #   class Meta:
+ #       managed = False
+ #       db_table = 'books_book'
 
 
-class BooksPublisher(models.Model):
-    name = models.CharField(max_length=30)
-    address = models.CharField(max_length=50)
-    city = models.CharField(max_length=60)
-    state_province = models.CharField(max_length=30)
-    country = models.CharField(max_length=50)
-    website = models.CharField(max_length=200)
+#class BooksBookAuthors(models.Model):
+#    book_id = models.IntegerField()
+#    author_id = models.IntegerField()
 
-    class Meta:
-        managed = False
-        db_table = 'books_publisher'
+#    class Meta:
+#        managed = False
+#        db_table = 'books_book_authors'
+#        unique_together = (('book_id', 'author_id'),)
+
+
+#class BooksPublisher(models.Model):
+#    name = models.CharField(max_length=30)
+#    address = models.CharField(max_length=50)
+#    city = models.CharField(max_length=60)
+#    state_province = models.CharField(max_length=30)
+#    country = models.CharField(max_length=50)
+#    website = models.CharField(max_length=200)
+
+#    class Meta:
+ #       managed = False
+ #       db_table = 'books_publisher'
 
 
 class DjangoMigrations(models.Model):
