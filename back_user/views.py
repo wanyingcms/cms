@@ -43,7 +43,7 @@ def dologin(req):
                 response = HttpResponseRedirect("/back_user/cmsindex/")
                 response.set_cookie("username",username)
 
-                redisSet(username,'123123123',30*60)
+                redisSet(username,username,30*60)
                 return response
             else:
                 print 'login fail......'
@@ -62,6 +62,7 @@ def logout(req):
 
     loginkey = redisGet(username)
     if loginkey:
+        print "推出。。。。。。"
         redisDelKey(username)
 
     return HttpResponseRedirect('/back_user/login')

@@ -49,6 +49,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'back_user.loginmdwl.QtsAuthenticationMiddleware'
 )
 
 ROOT_URLCONF = 'cms.urls'
