@@ -1,0 +1,1066 @@
+<!-- 弹出窗口用的DIV -->
+<div id="div_for_dialog"></div>
+<!-- 中心树-DIV -->
+<div id="usercenter_tree_div" class="search_tree">
+</div>
+<!-- 职位树-DIV -->
+<div id="usertitle_tree_div" class="search_tree">
+</div>
+<script type="text/javascript">
+/**
+	 *  Ajax真删除
+	 *  @Param sgridId
+	 *  @Param surl 删除请求url
+	 **/
+	function realDelete(sgridId, surl) {
+		confirmWin(function(v){
+			if (v) {// 确定删除
+				SuperMan_show_bg();
+				$.ajax({
+					type:"POST",
+					dataType:"json",
+					url: surl,
+					data:{},
+					success:function(result) {
+						SuperMan_hide_bg();
+						if (result.result==0) {
+							main_messageTip_deleteError_show();
+						} else if (result.result==1) {
+							$('#'+sgridId).omGrid('reload');
+							main_messageTip_deleteSuccess_show();
+						} else if (result.result==2){
+							main_messageTip_deleteCantBe_show();
+						}
+					},
+					error:function(err) {
+						SuperMan_hide_bg();
+						main_messageTip_show(ERROR_MESSAGE);
+					}
+				});
+			}
+		});
+	}
+	
+	/**
+	确认窗口，
+	@param func 回调函数 参数v点击确定是true ，点击取消是false
+	*/
+	function confirmWin(func){
+		$.omMessageBox.confirm({
+           title:'提示',
+           content:'您确定要删除此条记录？',
+           onClose:func
+       });
+	}
+	/**
+	 *  绑定 用户中心树
+	 *  @Param input_id 输入框ID
+	 *  @Param default_val 中心默认值（可选,默认为""）
+	 *  @Param isClear 是否带清空框(可选，默认为清空)
+	 *  @Param callBackfunc 回调函数
+	 **/
+	function bindUserCenterTree(input_id, default_val, isClear,callBackfunc) {
+		var clear_id = input_id+"_clear";
+		var clear_name = "全部";
+		var clear_buttonIcon = "${buttonRemoveIcons}";
+		var tree_div_id = "usercenter_tree_div";//input_id+"_div";
+		var tree_id = input_id+"_tree";
+		var trigger_id = input_id+"_trigger"; //下拉按钮
+		var tree_value_id = input_id+"_value";//存放树的节点ID
+		// 树输入框样式
+		if (isClear == null) {
+			isClear = true;
+		}
+		if (isClear==true) {
+			clear_name = "清空";
+			clear_buttonIcon = "${buttonRemoveIcons}";
+		}
+		var inputUI = $("#"+input_id);
+		inputUI.after(
+			"<span class='om-combo om-widget om-state-default'>"+
+			"<input type='text' id='"+tree_value_id+"' readonly='readonly'/>"+
+			"<span id='"+trigger_id+"' class='om-combo-trigger'></span>"+
+			"</span>");
+	
+		var isFist = true;
+		// 树加载方法
+		var func = function() {
+			var treeDivUI = $("#"+tree_div_id);
+			treeDivUI.html("<div><button id='"+clear_id+"' type='button'>"+clear_name+"</button></div><ul id='"+tree_id+"'></ul>");
+			inputUI.hide();
+			// 清除按钮样式
+			var clearUI = $("#"+clear_id);
+				clearUI.omButton({
+					icons : {left : clear_buttonIcon},
+					width : 70
+				});
+				// 全选事件
+				clearUI.unbind("click");
+				clearUI.click(function(){
+					$("#"+input_id).val("");
+					if (isClear==null || isClear==true) {
+						$("#"+tree_value_id).val("");
+					} else {
+						$("#"+tree_value_id).val("全选");
+					}
+					$("#"+tree_div_id).hide();
+				});
+			// 查询节点对应的路径名
+			var getNodeText = function(node){
+				if (node != null && node.text != null) {
+					var ndata = node, text = ndata.text;
+					var centerTreeUl = $("#"+tree_id);
+					ndata = centerTreeUl.omTree("getParent",ndata);
+		    		while(ndata){
+		    			text = ndata.text +"-" +text;
+		    			ndata = centerTreeUl.omTree("getParent",ndata);
+					}
+		    		return text;
+				}
+				return "";
+			};
+			var centerTreeUl = $("#"+tree_id);
+			centerTreeUl.omTree({
+				dataSource :  "${contextPath}/empSearch/centersTree",
+				simpleDataModel: true,
+	            onSelect: function(nodedata){
+					var nodedata_child = centerTreeUl.omTree("getChildren",nodedata);
+					//说明是子节点,子节点不让选择
+					if( !( nodedata_child.length == 1 && nodedata_child[0].text == null) ){
+						return false;
+					}
+					var text = getNodeText(nodedata);
+		    		$("#"+input_id).val(nodedata.id);
+					$("#"+tree_value_id).val(text);
+					$("#"+tree_div_id).hide();
+					if(callBackfunc != null && callBackfunc !=''){
+						 window[callBackfunc](nodedata.id);
+					}
+	            },
+				onBeforeSelect: function(nodedata){
+				},
+				onSuccess:function(data) {
+					if (default_val != null && default_val != "") {// 默认值
+						var target = $('#'+tree_id).omTree("findNode", "id", default_val);
+						var text = getNodeText(target);
+			    		$("#"+input_id).val(default_val);
+						$("#"+tree_value_id).val(text);
+					}
+					var depPosition = $("#"+tree_value_id).offset();//input_id
+					$("#"+tree_div_id).css({left:depPosition.left + "px",top:depPosition.top+20 +"px"}).hide();
+					if (isFist==false) {
+						$("#"+tree_div_id).show();
+						var funcBodyDown = function(event) {
+							if (!(event.target.id == tree_div_id || event.target.id == clear_id )) {
+				   				$("#"+tree_div_id).hide();
+				   				$("body").unbind("mousedown",funcBodyDown);
+				   			}
+						};
+						$("body").bind("mousedown", funcBodyDown);
+					}
+					isFist = false;
+				}
+	        });
+		};
+		
+		func();
+		
+		
+		// 显示框事件
+		var valueUI = $("#"+tree_value_id);
+		valueUI.unbind("click");
+		valueUI.bind("click", func);
+		// 下拉按钮事件
+		var triggerUI = $("#"+trigger_id);
+		triggerUI.unbind("click");
+		triggerUI.bind("click", func);
+	}
+	
+	/**
+	 *  绑定 用户职位树 (将机构信息也返回)
+	 *  @Param dept_input_id 机构输入框ID
+	 *  @Param title_input_id 职位输入框ID
+	 *  @Param dept_default_val 机构默认值
+	 *  @Param title_default_val 职位默认值
+	 *  @Param isClear 是否带清空框(可选，默认为清空)
+	 *  @Param callBackfunc 回调函数
+	 **/
+	function bindUserTitleTree(dept_input_id,title_input_id,dept_default_val,title_default_val, isClear,callBackfunc) {
+		var clear_id = title_input_id+"_clear";
+		var clear_name = "全部";
+		var clear_buttonIcon = "${buttonRemoveIcons}";
+		var tree_div_id = "usertitle_tree_div";//title_input_id+"_div";
+		var tree_id = title_input_id+"_tree";
+		var trigger_id = title_input_id+"_trigger"; //下拉按钮
+		var tree_value_id = title_input_id+"_value";//存放树的节点ID
+		// 树输入框样式
+		if (isClear == null) {
+			isClear = true;
+		}
+		if (isClear==true) {
+			clear_name = "清空";
+			clear_buttonIcon = "${buttonRemoveIcons}";
+		}
+		var inputUI = $("#"+title_input_id);
+		inputUI.after(
+			"<span class='om-combo om-widget om-state-default'>"+
+			"<input type='text' id='"+tree_value_id+"' readonly='readonly'/>"+
+			"<span id='"+trigger_id+"' class='om-combo-trigger'></span>"+
+			"</span>");
+		var isFist = true;
+		// 树加载方法
+		var func = function() {
+			var treeDivUI = $("#"+tree_div_id);
+			treeDivUI.html("<div><button id='"+clear_id+"' type='button'>"+clear_name+"</button></div><ul id='"+tree_id+"'></ul>");
+			inputUI.hide();
+			// 清除按钮样式
+			var clearUI = $("#"+clear_id);
+				clearUI.omButton({
+					icons : {left : clear_buttonIcon},
+					width : 70
+				});
+				// 全选事件
+				clearUI.unbind("click");
+				clearUI.click(function(){
+					$("#"+title_input_id).val("");
+					if(dept_input_id==null || dept_input_id != ""){
+						$("#"+dept_input_id).val("");
+					}
+					if (isClear==null || isClear==true) {
+						$("#"+tree_value_id).val("");
+					} else {
+						$("#"+tree_value_id).val("全选");
+					}
+					$("#"+tree_div_id).hide();
+				});
+			// 查询节点对应的路径名
+			var getNodeText = function(node){
+				if (node != null && node.text != null) {
+					var ndata = node, text = ndata.text;
+					var titleTreeUl = $("#"+tree_id);
+					ndata = titleTreeUl.omTree("getParent",ndata);
+		    		while(ndata){
+		    			text = ndata.text +"-" +text;
+		    			ndata = titleTreeUl.omTree("getParent",ndata);
+					}
+		    		return text;
+				}
+				return "";
+			};
+			var titleTreeUl = $("#"+tree_id);
+			titleTreeUl.omTree({
+				dataSource :  "${contextPath}/empSearch/titleTree",
+				simpleDataModel: true,
+	            onSelect: function(nodedata){
+					var nodedata_child = titleTreeUl.omTree("getChildren",nodedata);
+					//说明是子节点,子节点不让选择
+					if( !( nodedata_child.length == 1 && nodedata_child[0].text == null) ){
+						return false;
+					}
+					var text = getNodeText(nodedata);
+		    		$("#"+title_input_id).val(nodedata.id);
+		    		if(dept_input_id==null || dept_input_id != ""){
+		    			var parent = titleTreeUl.omTree('getParent',nodedata);
+		    			if(parent != null){
+		    				$("#"+dept_input_id).val(parent.id);
+		    			}
+					}
+					$("#"+tree_value_id).val(text);
+					$("#"+tree_div_id).hide();
+					if(callBackfunc != null && callBackfunc !=''){
+						 window[callBackfunc](nodedata.id);
+					}
+	            },
+				onBeforeSelect: function(nodedata){
+				},
+				onSuccess:function(data) {
+					if (title_default_val != null && title_default_val != "") {// 默认值
+						var target = $('#'+tree_id).omTree("findNode", "id", title_default_val);
+						var text = getNodeText(target);
+			    		$("#"+title_input_id).val(title_default_val);
+						$("#"+tree_value_id).val(text);
+					}
+					if(dept_default_val != null && dept_default_val != "" && dept_input_id != null && dept_input_id != ""){
+						$("#"+dept_input_id).val(dept_default_val);
+					}
+					var depPosition = $("#"+tree_value_id).offset();//input_id
+					$("#"+tree_div_id).css({left:depPosition.left + "px",top:depPosition.top+20 +"px"}).hide();
+					if (isFist==false) {
+						$("#"+tree_div_id).show();
+						var funcBodyDown = function(event) {
+							if (!(event.target.id == tree_div_id || event.target.id == clear_id )) {
+				   				$("#"+tree_div_id).hide();
+				   				$("body").unbind("mousedown",funcBodyDown);
+				   			}
+						};
+						$("body").bind("mousedown", funcBodyDown);
+					}
+					isFist = false;
+				}
+	        });
+		};
+		
+		func();
+		
+		
+		// 显示框事件
+		var valueUI = $("#"+tree_value_id);
+		valueUI.unbind("click");
+		valueUI.bind("click", func);
+		// 下拉按钮事件
+		var triggerUI = $("#"+trigger_id);
+		triggerUI.unbind("click");
+		triggerUI.bind("click", func);
+	}
+	/**
+	 *  Ajax 停用
+	 *  @Param sgridId
+	 *  @Param surl 停用请求url
+	 *  @Param data 请求参数 
+	 *  @Param contexts 提示信息
+	 **/
+	function realDeleteStop(sgridId, surl,data,contexts) {
+		confirmWinStop(contexts,function(v){
+			if (v) {// 确定停用
+				SuperMan_show_bg();
+				$.post(surl,data,function(data){
+					SuperMan_hide_bg();
+					if (data.result==0) {
+						if(data.mess!=null){
+							main_messageTip_show(data.mess);
+						}else{
+							main_messageTip_deleteError_show();
+						}
+					} else if (data.result==1) {
+						$('#'+sgridId).omGrid('reload');
+						main_messageTip_deleteSuccess_show();
+					} else if (data.result==2){
+						main_messageTip_deleteCantBe_show();
+					}
+				},'json');
+			}
+		});
+	}
+	/**
+	 * 判断是否选择行 , 没有选择, 则提示, 选择行了则返回行集合.
+	 */
+	function isSelects(gridId) {
+		var selectedRecord = $("#"+gridId)
+				.omGrid('getSelections', true);
+		if (selectedRecord.length == 0) {
+			main_messageBox_pleaseSelectOne_alert();
+			return false;
+		}
+		return selectedRecord;
+	}
+	/**
+	确认窗口，
+	@param func 回调函数 参数v点击确定是true ，点击取消是false
+	*/
+	function confirmWinStop(contexts,func){
+		$.omMessageBox.confirm({
+           title:'提示',
+           content:contexts,
+           onClose:func
+       });
+	}
+	/**
+	静态下拉列表
+	input_id input框id
+	dataSource 数据源json串 例如[{text : '启用', value : 0},{text : '停用', value : 1}]
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindStaticDropList(input_id, dataSource,default_val, func,widht) {
+		$('#'+input_id).omCombo({
+	        dataSource:dataSource,
+	        emptyText:'请选择!',
+	        editable:false,
+	        lazyLoad:true,
+	        width:widht,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	所有讲师下拉列表(单选)
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindAllTeacherDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/teacherSurvey/findAllTeachers",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'employeeId',
+	        inputField : 'name',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	课程阶段下拉列表(单选)
+	seriesClassName 系列班name
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindCourseStageDropList(seriesClassName,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/teacherSurvey/findCourseStage?seriesClassName="+seriesClassName,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'id',
+	        inputField : 'name',
+	        lazyLoad:false,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}	
+	
+	
+	/**
+	系列班下拉列表(单选)
+	courseId 课程id
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindSeriesClassDropList(courseId,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/seriesClass/findSeriesClassByCourseId?courseId="+courseId,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.seriesClassName;
+	        },
+	        valueField : 'seriesClassId',
+	        inputField : 'seriesClassName',
+	        lazyLoad:false,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	中心班级下拉列表
+	centerId 中心Id
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindCenterClassDropList(centerId,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/classid/selectClassByCenterId?centerId="+centerId,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.className;
+	        },
+	        valueField : 'classId',
+	        inputField : 'className',
+	        lazyLoad:false,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	中心系列班级下拉列表
+	centerId 中心Id
+	seriesId 系列班Id
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindCenterSeriesClassDropList(centerId,seriesId,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/classid/centerSeriesAllClassids?centerId="+centerId+"&seriesClassId="+seriesId,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.className;
+	        },
+	        valueField : 'classId',
+	        inputField : 'className',
+	        lazyLoad:false,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	课程下拉列表(单选)
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindCourseDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/document/selectCodes",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.courseName;
+	        },
+	        valueField : 'courseId',
+	        inputField : 'courseName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	用户课程下拉列表(单选)  只能查到用户权限下的课程
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindUserCourseDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/course/userCourses",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.courseName;
+	        },
+	        valueField : 'courseId',
+	        inputField : 'courseName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	课程下拉列表(可多选)
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindCourseMultDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/document/selectCodes",
+	        emptyText:'请选择!',
+	        editable:false,
+	        multi : true,
+	         optionField:function(data,index){
+	            return data.courseName;
+	        },
+	        valueField : 'courseName',
+	        inputField : 'courseName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+		/**
+	角色下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindRoleDropList(input_id, default_val,func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/role/findAllRole",
+	        emptyText:'请选择!',
+	        editable:false,
+	        optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'id',
+	        inputField : 'name',
+	        lazyLoad:true,
+	        value:default_val,
+	        listMaxHeight:85,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+		/**
+	学历下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindEducationDropList(input_id, default_val,func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/educationBackground/educationBackgrounds",
+	        emptyText:'请选择!',
+	        editable:false,
+	        optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'id',
+	        inputField : 'name',
+	        lazyLoad:true,
+	        value:default_val,
+	        listMaxHeight:85,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	 * 下拉框 , 取后台参数为 list 
+	 * ModelAndviewUtil.Json_ok(list);
+	 */
+	function searchCombos(boxid,url,func,params,values){
+		$('#' + boxid).omCombo({
+			emptyText : '请选择 !',
+			editable : false,
+			listMaxHeight : 200,
+			onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+		});
+		$.post(url,params,function(data){
+			if(data.result==1){
+				$('#' + boxid).omCombo('setData',data.list);
+			}
+			if(values==null){
+				$('#' + boxid).omCombo("value",null);
+			}else {
+				$('#' + boxid).omCombo({ value : values });
+			}
+		},'json');
+	}
+	function regionCombo(tabId,cfunc,onsucc){
+		$("#"+tabId).omCombo({
+			dataSource:"${contextPath}/empSearch/regions",
+			valueField:'regionId',
+			optionField:'regionName',
+			editable : false,
+			emptyText:"请选择大区!",
+			onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(cfunc)){
+	        		cfunc(target, newValue, oldValue, event);
+	        	}
+	        },
+	        onSuccess:function(data, textStatus, event){
+	        	if($.isFunction(onsucc)){
+	        		onsucc(data, textStatus, event);
+	        	}
+	        }
+		});
+	}
+	function cityCombo(tabId,cfunc,onsucc){
+		$("#"+tabId).omCombo({
+			dataSource:"${contextPath}/empSearch/citys",
+			valueField:'cityId',editable : false,
+			optionField:'cityName',
+			inputField : 'cityName',
+			emptyText:"请选择城市!",
+			onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(cfunc)){
+	        		cfunc(target, newValue, oldValue, event);
+	        	}
+	        },
+	        onSuccess:function(data, textStatus, event){
+	        	if($.isFunction(onsucc)){
+	        		onsucc(data, textStatus, event);
+	        	}
+	        }
+		});
+	}
+	function centerCombo(tabId,cfunc,onsucc){
+		$("#"+tabId).omCombo({
+			dataSource:"${contextPath}/empSearch/centers",
+			valueField:'centerId',editable : false,
+			optionField:'centerName',
+			inputField : 'centerName',
+			emptyText:"请选择中心!",
+			onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(cfunc)){
+	        		cfunc(target, newValue, oldValue, event);
+	        	}
+	        },
+	        onSuccess:function(data, textStatus, event){
+	        	if($.isFunction(onsucc)){
+	        		onsucc(data, textStatus, event);
+	        	}
+	        }
+		});
+	}
+	
+	/**
+	 * 所有课程
+	 */
+	function courseCombo(tabId,cfunc){
+		$("#"+tabId).omCombo({
+			dataSource:"${contextPath}/empSearch/course",
+			valueField:'courseId',editable : false,
+			optionField:'courseName',
+			emptyText:"请选择课程!",
+			onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(cfunc)){
+	        		cfunc(target, newValue, oldValue, event);
+	        	}
+	        }
+		});
+	}
+	/**
+	 * 员工-助教
+	 */
+	function empCentrCombo(tabId,cfunc,onsucc){
+		$("#"+tabId).omCombo({
+			dataSource:"${contextPath}/employee/assitants",
+			valueField:'employeeId',
+			optionField:'name',editable : false,
+			emptyText:"请选择助教!",
+			onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(cfunc)){
+	        		cfunc(target, newValue, oldValue, event);
+	        	}
+	        },
+	        onSuccess:function(data, textStatus, event){
+	        	if($.isFunction(onsucc)){
+	        		onsucc(data, textStatus, event);
+	        	}
+	        }
+		});
+	}
+	/**
+	部门下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindDeptDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/empSearch/depts",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.deptName;
+	        },
+	        valueField : 'deptId',
+	        inputField : 'deptName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	部门下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindDeptTitleDropList(deptId,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/empSearch/titles?deptId="+deptId,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'titleId',
+	        inputField : 'name',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	输入类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindInputTypeDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:[{'value':0,'text':'无输入，无下拉框'},{'value':1,'text':'只有输入'},{'value':2,'text':'只有下拉框'}],
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.text;
+	        },
+	        valueField : 'value',
+	        inputField : 'text',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	雇员类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindObjTypeDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:[{'value':0,'text':'讲师'},{'value':1,'text':'助教'},{'value':2,'text':'项目经理'}],
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.text;
+	        },
+	        valueField : 'value',
+	        inputField : 'text',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	投诉类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindSuggestFlagDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:[{'value':0,'text':'投诉'},{'value':1,'text':'建议'},{'value':2,'text':'表扬'}],
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.text;
+	        },
+	        valueField : 'value',
+	        inputField : 'text',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	投诉对象类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindSuggestObjTypeDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/newSugConfig/findALLLeavel2Type",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.typeName;
+	        },
+	        valueField : 'typeId',
+	        inputField : 'typeName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	投诉一级类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindSuggestType1DropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/suggestConfigure/OType",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.nsTypeName;
+	        },
+	        valueField : 'nsTypeId',
+	        inputField : 'nsTypeName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	投诉二级类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindSuggestType2DropList(type_id,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/suggestConfigure/TType?nsTypeId="+type_id,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.nsTypeName;
+	        },
+	        valueField : 'nsTypeId',
+	        inputField : 'nsTypeName',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	操作类型下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindOperateTypeDropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/ttsisLog/getLogOperateType",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.operate_name;
+	        },
+	        valueField : 'operate_type',
+	        inputField : 'operate_name',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	一级菜单下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindMenu1DropList(input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/menu/getMenu1",
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'id',
+	        inputField : 'name',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	/**
+	二级菜单下拉列表
+	input_id input框id
+	default_val 默认值
+	func 当选择框的值改变时调用的回调函数
+	*/
+	function bindMenu2DropList(menu1,input_id,default_val, func) {
+		$('#'+input_id).omCombo({
+	        dataSource:"${contextPath}/menu/getMenu2?parentId="+menu1,
+	        emptyText:'请选择!',
+	        editable:false,
+	         optionField:function(data,index){
+	            return data.name;
+	        },
+	        valueField : 'id',
+	        inputField : 'name',
+	        lazyLoad:true,
+	        listMaxHeight:85,
+	        value:default_val,
+	        onValueChange : function(target, newValue, oldValue, event){
+	        	if($.isFunction(func)){
+	        		func(target, newValue, oldValue, event);
+	        	}
+	        }
+    	});
+	}
+	
+</script>
