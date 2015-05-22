@@ -19,7 +19,8 @@ class LoginForm(forms.Form):
     password=forms.CharField(label='密码：',widget=forms.PasswordInput)
 
 def login(req):
-
+    response = HttpResponse()
+    response.set_cookie("username","123123")
     return render_to_response("login.html")
 
 #登录方法
@@ -39,10 +40,11 @@ def dologin(req):
                 #登录信息存入redis
                 cookid = req.COOKIES
                 print cookid
-                response = HttpResponse()
+                response = HttpResponseRedirect("/back_user/cmsindex/")
                 response.set_cookie("username",username)
+
                 redisSet(username,'123123123',30*60)
-                return HttpResponseRedirect("http://0.0.0.0:8000/back_user/cmsindex/")
+                return response
             else:
                 print 'login fail......'
                 return HttpResponseRedirect('/back_user/login')
@@ -55,18 +57,21 @@ def dologin(req):
 # 首先根据cookid 查出 cook中存储的用户名， 用用户名查处登录埘的key
 # 然后比较这连个key是否一致，如果一致则说明是同样个人，可以删除redis中登录信息
 def logout(req):
-    cookid = req.COOKIES['csrftoken']
+    cookid = req.COOKIES['username']
     username = redisGet(cookid)
 
     loginkey = redisGet(username)
-    if loginkey == cookid:
+    if loginkey:
         redisDelKey(username)
 
     return HttpResponseRedirect('/back_user/login')
 
 
-
 def cmsindex(req):
+    print 'cookie ===', req.COOKIES
+    #response = HttpResponse()
+    #response.set_cookie("username","123123")
+    #return response('main/main.html')
     return render_to_response('main/main.html')
 
 

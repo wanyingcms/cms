@@ -14,12 +14,7 @@
 		<script type="text/javascript" src="${jsPath }/json.js"></script>
 		<script type="text/javascript" src="${jsPath }/iframepost.js"></script>
 
-        <script type="text/javascript">
-            $(document).ready(function(){
 
-
-            });
-        </script>
 	</head>
 	<body>
 		<div id="north-panel" class="header">
@@ -46,7 +41,16 @@
 
 	</body>
 	<script type="text/javascript">
-        $("#north-panel").load("/back_user/top/");
+        $("#north-panel").load("/back_user/top/",function(){
+            $("#modifyPasswordBtn").click(function(){
+           		main_ChangeDivContent("div_for_dialog","${contextPath}/user/toEditPassword");
+           });
+           // 退出系统
+           $("#modifyLogoutBtn").click(function(){
+
+           		location.href='/back_user/logout' ;
+           });
+        });
                 $("#south-panel").load("/back_user/footer/");
                 $("#allUseDiv").load("/back_user/allusediv/");
                 $("#tab0").load("/back_user/welcome/")
@@ -72,14 +76,7 @@
 			    } 
 			};
            var myDate = new Date();
-           // 修改密码框
-           $("#modifyPasswordBtn").click(function(){
-           		main_ChangeDivContent("div_for_dialog","${contextPath}/user/toEditPassword");
-           });
-           // 退出系统
-           $("#modifyLogoutBtn").click(function(){
-           		location.href='/back_user/logout' ;
-           });
+
           
            $('body').omBorderLayout({
            	   panels:[{
