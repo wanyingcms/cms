@@ -28,4 +28,10 @@ urlpatterns = [
 
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_URL}),
 
+    url(r'^back_theme/themeindex$', 'back_theme.views.themeindex'),
+    url(r'^back_theme/searchTheme$', 'back_theme.views.searchTheme'),
+    url(r'^back_theme/showThemeType$', 'back_theme.views.showThemeType'),
+    url(r'^back_theme/showBackUser$', 'back_theme.views.showBackUser'),
+    url(r'^back_theme/exportExcel$', 'back_theme.views.exportExcel'),
+    url(r'^back_theme/hideTheme$', 'back_theme.views.hideTheme'),
 ]
