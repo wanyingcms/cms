@@ -4,7 +4,7 @@
     <div id="p_menu_${pMenu.id}" name="{{ menuname }}" class="p_menu">
 
         {% for menu in cmenu %}
-            <div id="c_menu_${cMenu.id}" url="/${cMenu.url}" menuId="${cMenu.id}" class="c_menu"> {{ menu.title }}</div>
+            <div id="c_menu_{{ menu.id }}" url="/{{ menu.url }}" menuId="{{ menu.id }}" class="c_menu"> {{ menu.title }}</div>
         {% endfor %}
 
 	</div>
@@ -72,7 +72,7 @@ $(document).ready(function() {
 			    title : me.html(),
 			    tabId: 'center_tab_'+me_menuId,
 			    content:'1',
-			    url : '${contextPath}'+me_url,
+			    url : me_url,
 			    closable : true
 			});
 			
