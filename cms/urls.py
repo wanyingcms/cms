@@ -35,4 +35,6 @@ urlpatterns = [
     url(r'^back_theme/showBackUser$', 'back_theme.views.showBackUser'),
     url(r'^back_theme/exportExcel$', 'back_theme.views.exportExcel'),
     url(r'^back_theme/hideTheme$', 'back_theme.views.hideTheme'),
+
+    url(r'^p2pmsg/hudong/$','p2pmsg.views.hudong')
 ]
