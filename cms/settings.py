@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'back_user',
     'back_theme',
+    'p2pmsg',
 )
 
 MIDDLEWARE_CLASSES = (

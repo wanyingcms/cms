@@ -4,11 +4,13 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django import forms
+from utils.dbutils import menuList
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cms.settings")
 from back_user.models import *
 from utils.redisUtil import *
 import json
-import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cms.settings")
+
 
 
 # Create your views here.
@@ -25,28 +27,23 @@ def login(req):
 
 #登录方法
 def dologin(req):
-    print '........'
     if req.method == 'POST':
         uf = LoginForm(req.POST)
         if uf.is_valid():
             username = uf.cleaned_data['username']
             password = uf.cleaned_data['password']
-            print 'username =',username,'password = ',password
             #查询用户
             user = BackuserUserinfo.objects.filter(username__exact=username,userpwd__exact=password)
 
             if user:
-                print 'login success......'
                 #登录信息存入redis
                 cookid = req.COOKIES
-                print cookid
                 response = HttpResponseRedirect("/back_user/cmsindex/")
                 response.set_cookie("username",username)
 
                 redisSet(username,username,30*60)
                 return response
             else:
-                print 'login fail......'
                 return HttpResponseRedirect('/back_user/login')
     else:
         uf = LoginForm()
@@ -104,7 +101,6 @@ def editPassword(req):
 
 
 def cmsindex(req):
-    print 'cookie ===', req.COOKIES
     #response = HttpResponse()
     #response.set_cookie("username","123123")
     #return response('main/main.html')
@@ -122,7 +118,12 @@ def cmsindex(req):
 
 
 def indexleft(req):
-    return render_to_response('main/left.html',{'indexdata':[1,2,3]})
+
+    menus = menuList()
+    print menus
+    for menuname,cmenu in menus.items():
+        print '=====',menuname,cmenu
+    return render_to_response('main/left.html',{'indexdata':menus})
 
 def allusediv(req):
     return render_to_response('main/allUseDiv.html')
@@ -132,3 +133,7 @@ def top(req):
     return render_to_response('main/top.html')
 def welcome(req):
     return render_to_response('main/welcome.html')
+
+
+
+

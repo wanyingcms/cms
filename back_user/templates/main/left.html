@@ -1,10 +1,10 @@
 
 
-{% for i in '1234' %}
-    <div id="p_menu_${pMenu.id}" name="${pMenu.name}" class="p_menu">
+{% for menuname,cmenu in indexdata.items %}
+    <div id="p_menu_${pMenu.id}" name="{{ menuname }}" class="p_menu">
 
-        {% for j in "1234" %}
-            <div id="c_menu_${cMenu.id}" url="/${cMenu.url}" menuId="${cMenu.id}" class="c_menu">${cMenu.name}你好 {{ j }}</div>
+        {% for menu in cmenu %}
+            <div id="c_menu_${cMenu.id}" url="/${cMenu.url}" menuId="${cMenu.id}" class="c_menu"> {{ menu.title }}</div>
         {% endfor %}
 
 	</div>
