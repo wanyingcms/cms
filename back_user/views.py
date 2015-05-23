@@ -120,9 +120,6 @@ def cmsindex(req):
 def indexleft(req):
 
     menus = menuList()
-    print menus
-    for menuname,cmenu in menus.items():
-        print '=====',menuname,cmenu
     return render_to_response('main/left.html',{'indexdata':menus})
 
 def allusediv(req):
