@@ -25,7 +25,8 @@ urlpatterns = [
     url(r'back_user/login/$','back_user.views.login'),
     url(r'back_user/dologin/$','back_user.views.dologin'),
     url(r'back_user/logout/$','back_user.views.logout'),
-
+    url(r'back_user/toEditPassword/$','back_user.views.toEditPassword'),
+    url(r'back_user/editPassword/$','back_user.views.editPassword'),
     url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_URL}),
 
     url(r'^back_theme/themeindex$', 'back_theme.views.themeindex'),

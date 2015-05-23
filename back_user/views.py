@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django import forms
 from back_user.models import *
 from utils.redisUtil import *
+import json
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cms.settings")
 
@@ -13,14 +14,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cms.settings")
 # Create your views here.
 
 
-#定义表单模型
+#定义登录表单模型
 class LoginForm(forms.Form):
     username=forms.CharField(label='用户名：',max_length=100)
     password=forms.CharField(label='密码：',widget=forms.PasswordInput)
 
 def login(req):
-    response = HttpResponse()
-    response.set_cookie("username","123123")
+
     return render_to_response("login.html")
 
 #登录方法
@@ -59,13 +59,48 @@ def dologin(req):
 def logout(req):
     cookid = req.COOKIES['username']
     username = redisGet(cookid)
-
     loginkey = redisGet(username)
     if loginkey:
-        print "推出。。。。。。"
         redisDelKey(username)
 
     return HttpResponseRedirect('/back_user/login')
+
+#密码修改窗口
+def toEditPassword(req):
+
+    return render_to_response('main/modifyPassword.html')
+
+
+
+#定义登录表单模型
+class ChangePWDForm(forms.Form):
+    oldPassword=forms.CharField(label='旧密码：',widget=forms.PasswordInput)
+    newPassword=forms.CharField(label='新密码：',widget=forms.PasswordInput)
+    newPassword2=forms.CharField(label='新密码确认：',widget=forms.PasswordInput)
+
+#修改密码
+def editPassword(req):
+    cf = ChangePWDForm(req.POST)
+    if cf.is_valid():
+        oldPassword = cf.cleaned_data['oldPassword']
+        newPassword = cf.cleaned_data['newPassword']
+        newPassword2 = cf.cleaned_data['newPassword2']
+        username = req.COOKIES["username"]
+        user = BackuserUserinfo.objects.get(username__exact=username)
+        if user and oldPassword == user.userpwd:
+            user.userpwd=newPassword
+            user.save()
+
+            #修改完成之后，删除用户登录状态
+            cookid = req.COOKIES['username']
+            username = redisGet(cookid)
+            loginkey = redisGet(username)
+            if loginkey:
+                redisDelKey(username)
+                #return render_to_response('main/modifyPassword.html',{"errorMsg":"修改成功！","result":"1"})
+                return HttpResponse(json.dumps({"result":"1","errorMsg":"修改成功！"}))
+        else:
+            return render_to_response('main/modifyPassword.html',{"errorMsg":"密码不正确！"})
 
 
 def cmsindex(req):
