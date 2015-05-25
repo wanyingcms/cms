@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>主题管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
+</head>
+<body>
+<input id="showThemeType" /> <a href="#">分类管理</a> <input id="createUser" value="创建者" /><br />
+运维人员：<input id="showBackUser"/><input type="button" value="搜索" id="searchBtn" /><input type="button" value="导出" id="exportBtn">
+<table id="grid"></table>
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript">
+        $(document).ready(function() {
+            //主题列表
+            $('#grid').omGrid({
+                dataSource : 'searchTheme?method=fast&theme=init',
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
+                             {header : '图片', name : 'city', width : 50, align : 'left'},
+                             {header : '主题名称', name : 'address', align : 'left', width : 100},
+                    {header : '创建者', name : 'city', align : 'left', width : 100},
+                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
+                    {header : '打开次数', name : 'city', align : 'left', width : 50},
+                    {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '操作', name : 'id', align : 'left', width : 150,
+                        renderer:function(colValue, rowData, rowIndex){
+                            	 return '<a href="javascript:;" onclick="modifyTheme('+colValue+')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">隐藏</a>';
+                             }} ]
+
+            });
+
+            //主题分类
+            $('#showThemeType').omCombo({
+                dataSource : '/back_theme/showThemeType'
+            });
+            //运维人员
+            $('#showBackUser').omCombo({
+                dataSource : '/back_theme/showBackUser'
+            });
+        });
+    $("#searchBtn").click(function() {
+        $('#grid').omGrid({
+                dataSource : 'searchTheme?method=fast&theme=search&createUser='+$("#createUser").val()+'&showThemeType='+$("#showThemeType").val()+'&showBackUser='+$("#showBackUser").val(),
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
+                             {header : '图片', name : 'city', width : 50, align : 'left'},
+                             {header : '主题名称', name : 'address', align : 'left', width : 100},
+                    {header : '创建者', name : 'city', align : 'left', width : 100},
+                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
+                    {header : '打开次数', name : 'city', align : 'left', width : 50},
+                    {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'serverSide'},
+                    {header : '操作', name : 'city', align : 'left', width : 150} ]
+            });
+    });
+
+    //导出
+    $("#exportBtn").click(function() {
+        window.location.href = '/back_theme/exportExcel'
+    });
+
+    //编辑
+    function modifyTheme(themeId){
+        $.ajax({
+            url:"/back_theme/hideTheme",
+            data:"tid="+themeId,
+            success: function (result) {
+                alert(result.message)
+            }
+        });
+    }
+
+    //隐藏
+    function hideTheme(themeId){
+        alert('隐藏'+themeId);
+    }
+
+</script>
+</html>
+
