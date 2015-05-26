@@ -1,3 +1,4 @@
+#coding:utf-8
 from django.conf.urls import include, url
 from django.contrib import admin
 from cms import settings
@@ -36,5 +37,9 @@ urlpatterns = [
     url(r'^back_theme/exportExcel$', 'back_theme.views.exportExcel'),
     url(r'^back_theme/hideTheme$', 'back_theme.views.hideTheme'),
 
-    url(r'^p2pmsg/hudong/$','p2pmsg.views.hudong')
+    #p2pmsg p2p消息
+    url(r'^p2pmsg/hudong/$','p2pmsg.views.hudong'),
+    url(r'^p2pmsg/userType/$','p2pmsg.views.userType'),
+    url(r'^p2pmsg/virtualUserList/$','p2pmsg.views.virtualUserList'),
+    url(r'^p2pmsg/realUserList/$','p2pmsg.views.realUserList'),
 ]
