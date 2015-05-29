@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>答案管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-rowexpander.css" />
+</head>
+<body>
+<select id="showThemeType">
+    <option value="0">全部题目</option>
+    <option value="1">虚拟题目</option>
+    <option value="2">用户题目</option>
+</select>
+<select id="showThemeType">
+    <option value="0">全部分类</option>
+    {% for type in themeType %}
+        <option value="{{ type.value }}">{{ type.text }}</option>
+    {% endfor %}
+</select>
+<select id="showThemeType">
+    <option value="0">时间Z-A</option>
+    <option value="1">时间A-Z</option>
+</select>
+<select id="showThemeType">
+    <option value="0">30s刷新</option>
+    <option value="1">10s刷新</option>
+</select>
+<input id="createUser" value="答案内容" />
+<input id="createUser" value="答案ID" />
+赞数：<input id="createUser" value="0" />至<input id="createUser" value="999999999999" />
+<br />
+<input id="createUser" value="回答人昵称" />
+<input id="createUser" value="回答人ID" /><br />
+<input id="createUser" value="题目内容" />
+<input id="createUser" value="题目ID" /><br />
+<select id="showBackUser">
+    <option value="0">请选择运维人员</option>
+    {% for user in backUser %}
+        <option value="{{ user.value }}">{{ user.text }}</option>
+    {% endfor %}
+</select><input type="button" value="搜索" id="searchBtn" /><input type="button" value="导出" id="exportBtn" />
+<input type="button" value="添加" id="addBtn" />
+<select size="20">
+    <option value="1">主题1</option>
+    <option value="2">主问题12</option>
+    <option value="3">主问题13</option>
+    <option value="4">主问题14</option>
+    <option value="5">主问题15</option>
+    <option value="6">主问题16</option>
+    <option value="7">主问题17</option>
+    <option value="8">主问题18</option>
+    <option value="10">主问题19</option>
+</select>
+<table id="grid"></table>
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-draggable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-position.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-dialog.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-rowexpander.js"></script>
+<script type="text/javascript">
+        $(document).ready(function() {
+            $('#grid').omGrid({
+                dataSource : 'searchQuestion?method=fast&theme=init',
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
+                             {header : '问题', name : 'city', width : 'autoExpand', align : 'left'},
+                    {header : '回答数', name : 'id', align : 'left', width : 50},
+                    {header : '分享数', name : 'id', align : 'left', width : 50},
+                    {header : '举报数', name : 'id', align : 'left', width : 50},
+                    {header : '时间', name : 'id', align : 'left', width : 50},
+                    {header : '图片', name : 'city', width : 50, align : 'left',sort:'',
+                        renderer:function(colValue, rowData, rowIndex){
+                            return '<img src="'+colValue+'" />';
+                        }
+                    },
+                ],
+                autoFit:true,
+                height : 300,
+                //展开行时使用下面的方法生成详情，必须返回一个字符串
+                rowDetailsProvider:function(rowData,rowIndex){
+
+                    var content = "<p>"+rowData.address+"</p>" +
+                                    "<img src=\""+rowData.city+"\" />" +
+                                    "<input type=\"button\" value=\"添加答案\" />" +
+                                    "<input type=\"button\" value=\"展开所有答案\" />"
+                            ;
+
+                    return content;
+                }
+            });
+
+        });
+
+    //搜索
+    $("#searchBtn").click(function() {
+        $('#grid').omGrid({
+                dataSource : 'searchTheme?method=fast&theme=search&createUser='+$("#createUser").val()+'&showThemeType='+$("#showThemeType").val()+'&showBackUser='+$("#showBackUser").val(),
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
+                             {header : '图片', name : 'city', width : 50, align : 'left'},
+                             {header : '主题名称', name : 'address', align : 'left', width : 100},
+                    {header : '创建者', name : 'city', align : 'left', width : 100},
+                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
+                    {header : '打开次数', name : 'id', align : 'left', width : 50},
+                    {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'serverSide'},
+                    {header : '操作', name : 'city', align : 'left', width : 150} ]
+            });
+    });
+
+    //导出
+    $("#exportBtn").click(function() {
+        window.location.href = '/back_theme/exportExcel'
+    });
+
+    //编辑
+    function modifyTheme(themeId){
+        window.location.href = "/back_theme/editThemePage?tid="+themeId;
+    }
+
+    //编辑
+    $("#addBtn").click(function() {
+        window.location.href = "/back_theme/addThemePage";
+    });
+
+    //隐藏
+    function hideTheme(themeId){
+        $.ajax({
+            url:"/back_theme/hideTheme",
+            data:"tid="+themeId,
+            success: function (result) {
+                alert(result.message);
+            }
+        });
+    }
+
+    //分类管理弹窗
+    $("#typeBtn").click(function(){
+        $( "#dialog-modal").omDialog('open');
+        $.ajax({
+            url:"/back_theme/initThemeType",
+            success:function(result){
+                $("#typeDiv").html('');
+                for(var i=0;i<result.length;i++){
+                    $("#typeDiv").append("<input id=\""+result[i].id+"-ttype\" type=\"text\" value=\""+result[i].typeTitle+"\" />"+result[i].themeCount+"个主题<br />");
+                }
+            }
+        });
+    });
+
+    function closeDialog(){
+        $( "#dialog-modal").omDialog('close');
+    }
+
+
+</script>
+</html>
+
