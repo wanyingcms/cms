@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<form action="/back_user{{ actionURL }}" method="post">
+    {% csrf_token %}
+    {% if actionURL == '/editUser' %}
+    <input type="hidden" name="uid" value="{{ user.id }}">
+    {% endif %}
+    用户名：<input type="text" name="username" value="{{ user.username }}" /><br />
+    备注：<input type="text" name="comments" value="{{ user.comments }}" /><br />
+    {% if actionURL == '/addUser' %}
+    密码：<input type="text" /><br />
+    重复密码：<input type="text" name="userpwd" /><br />
+    {% endif %}
+    登录次数：{{ user.logins }}
+    出题数：{{ user.questions }}
+    答题数：{{ user.answers }}<br />
+    上次登录：{{ user.lastlogintime }}<br />
+    <input type="hidden" id="menupower" name="menupower" value="{{ menuStr }}" />
+    {% for k,v in resultData.items %}
+        {% for k2,v2 in v.items %}
+            <input type="checkbox" value="{{ k }}" onclick="checkMenu(this)" {% if k in menuStr %}checked{% endif %} />{{ k2 }}<br />
+            {% for v3 in v2 %}
+                {% for k4,v4 in v3.items %}
+                    &nbsp;&nbsp;<input type="checkbox" value="{{ k4 }}" father="{{ k }}" onclick="checkMenu(this)" {% if k4 in menuStr %}checked{% endif %} />{{ v4 }}<br />
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+
+    <input type="submit" value="提交" />
+</form>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript">
+    function checkMenu(key){
+        if(key.checked){
+            $('#menupower').val($('#menupower').val()+key.value+',')
+            var keys =  $('input[father='+key.value+']');
+            for(var i=0;i<keys.length;i++){
+                keys[i].checked=true;
+                $('#menupower').val($('#menupower').val()+keys[i].value+',');
+            }
+        }else{
+            $('#menupower').val($('#menupower').val().replace(key.value,''))
+            var keys =  $('input[father='+key.value+']');
+            for(var i=0;i<keys.length;i++){
+                keys[i].checked=false;
+                $('#menupower').val($('#menupower').val().replace(keys[i].value,''));
+            }
+        }
+    }
+</script>
+</body>
+</html>

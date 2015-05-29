@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>后台用户管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
+</head>
+
+<body>
+用户名：<input type="text" id="username" name="username" /> 备注：<input type="text" id="comments" name="comments" /> <input type="button" id="searchBtn" value="搜索" />
+<input type="button" value="添加" id="addBtn" />
+<table id="grid"></table>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-draggable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-position.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-dialog.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        url = "showUsersToJson?method=fast";
+        showUsers(url);
+    });
+
+    $("#addBtn").click(function(){
+        window.location.href="/back_user/initAddUser";
+    });
+
+    $("#searchBtn").click(function(){
+        url = "showUsersToJson?method=fast";
+        if($("#username").val().length != 0){
+            url += "&username="+$("#username").val()
+        }
+        if($("#comments").val().length != 0){
+            url += "&comments="+$("#comments").val()
+        }
+        showUsers(url);
+    });
+
+    function showUsers(url){
+        $('#grid').omGrid({
+                limit : 10,
+                dataSource : url,
+                colModel : [ {header : 'ID', name : 'id', width : 220, align : 'center',sort:'clientSide'},
+                             {header : '用户名', name : 'username', width : 80, align : 'center',sort:''},
+                    {header : '备注', name : 'comments', align : 'center', width : 'autoExpand',sort:''},
+                    {header : '登录数', name : 'logins', align : 'center', width : 32,sort:'clientSide'},
+                    {header : '回答数', name : 'answers', align : 'center', width : 32,sort:''},
+                    {header : '提问数', name : 'questions', align : 'center', width : 32, sort:'clientSide'},
+                    {header : '最后登录时间', name : 'lastlogintime', align : 'center', width : 120, sort:'clientSide'},
+                    {header : '创建时间', name : 'createtime', align : 'center', width : 120, sort:'clientSide'},
+                        {header : '创建人', name : 'createid', align : 'center', width : 80, sort:'clientSide'},
+                        {header : '状态', name : 'userstatus', align : 'center', width : 25, sort:'clientSide'},
+                    {header : '操作', name : 'id', align : 'center', width : 100,sort:'',
+                        renderer:function(colValue, rowData, rowIndex){
+                            	 return '<a href="javascript:;" onclick="modifyTheme('+colValue+')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">隐藏</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">停用</a>';
+                             }} ]
+
+            });
+    }
+
+</script>
+
+</body>
+</html>
