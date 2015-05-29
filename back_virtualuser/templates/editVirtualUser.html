@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>添加/编辑虚拟用户</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+</head>
+<body>
+<form id="saveThemeForm">
+ID：AAAAA
+<input type="hidden" name="themeId" value="0" />
+分类：
+<select id="themeType" name="themeType">
+    <option value="0">请选择</option>
+    {% for type in themeType %}
+        <option value="{{ type.value }}">{{ type.text }}</option>
+    {% endfor %}
+</select>
+虚拟手机：<input type="text" name="themeTitle" id="themeTitle" value="主题名称" />
+<br />
+昵称：<input type="text" name="themeTitle" id="themeTitle" value="主题名称" />
+<br />
+密码：<input type="text" name="themeTitle" id="themeTitle" value="主题名称" />
+<br />
+重复密码：<input type="text" name="themeTitle" id="themeTitle" value="主题名称" />
+<br />
+备注：<textarea id="themeContent" name="themeContent"></textarea><br />
+</form>
+登录次数：1
+上次登录：2015-5-4
+题目数量：0 <br />
+回答数量：0 <br />
+
+<input type="button" value="保存" id="saveBtn" />
+<input type="button" value="取消" />
+
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-fileupload.js"></script>
+<script type="text/javascript">
+    //保存
+    $("#saveBtn").click(function (){
+        $.ajax({
+            type:"post",
+            url:"/back_theme/saveTheme",
+            data:$("#saveThemeForm").serialize(),
+            contentType:"application/x-www-form-urlencoded; charset=utf-8",
+            success:function(result){
+                alert(result.message);
+            }
+        });
+    });
+
+</script>
+</html>
