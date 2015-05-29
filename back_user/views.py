@@ -10,6 +10,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cms.settings")
 from back_user.models import *
 from utils.redisUtil import *
 import json
+import uuid
+import datetime
 
 
 
@@ -120,6 +122,9 @@ def cmsindex(req):
 def indexleft(req):
 
     menus = menuList()
+    print menus
+    for menuname,cmenu in menus.items():
+        print '=====',menuname, cmenu
     return render_to_response('main/left.html',{'indexdata':menus})
 
 def allusediv(req):
@@ -134,3 +139,154 @@ def welcome(req):
 
 
 
+
+#后台用户管理
+def showUsers(request):
+    return render(request, 'management/showUsers.html',)
+
+#获取后台用户
+def showUsersToJson(request):
+
+    startStr = request.GET['start']
+    limitStr = request.GET['limit']
+    show = request.GET['show']
+    print 'sss' in request.GET
+    if show == 'init':
+        total = BackuserUserinfo.objects.count()
+        userdata = BackuserUserinfo.objects.all()[int(startStr):int(limitStr)+int(startStr)]
+        pass
+    else:
+        pass
+
+
+    rows = []
+    for user in userdata:
+        rows.append({"id": user.id, "username": user.username, "comments": user.comments, "logins": user.logins,
+                     "answers": user.answers, "questions": user.questions, "lastlogintime": user.lastlogintime.strftime('%Y-%m-%d %H:%M:%S'),
+                     "createtime": user.createtime.strftime('%Y-%m-%d %H:%M:%S'), "createid": user.comments, "userstatus": user.comments, })
+
+    response_data = {'total': total, 'rows': rows, }
+
+    return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+
+#初始化添加用户页
+def initAddUser(request):
+    #获取所有权限
+    sql = 'select b.id id,b.title title,p.title ptitle,p.id pid from backuser_backmenu b left join backuser_backmenu p on p.id = b.parentid'
+    menuData = BackuserBackmenu.objects.raw(sql)
+    resultData = {}
+    for menu in menuData:
+        if menu.ptitle is None:
+            if menu.ptitle not in resultData:
+                resultData[menu.id] = {menu.title: []}
+            continue
+        if menu.pid not in resultData:
+            resultData[menu.pid] = {menu.ptitle: []}
+        resultData[menu.pid][menu.ptitle].append({menu.id: menu.title})
+    return render(request, 'management/initEditUser.html', {'actionURL': '/addUser', 'resultData': resultData, })
+
+#初始化编辑用户页
+def initEditUser(request):
+    uid = request.GET['uid']
+    buser = BackuserUserinfo.objects.get(id=uid)
+    #获取所有权限
+    sql = 'select b.id id,b.title title,p.title ptitle,p.id pid from backuser_backmenu b left join backuser_backmenu p on p.id = b.parentid'
+    menuData = BackuserBackmenu.objects.raw(sql)
+    resultData = {}
+    for menu in menuData:
+        if menu.ptitle is None:
+            if menu.ptitle not in resultData:
+                resultData[menu.id] = {menu.title: []}
+            continue
+        if menu.pid not in resultData:
+            resultData[menu.pid] = {menu.ptitle: []}
+        resultData[menu.pid][menu.ptitle].append({menu.id: menu.title})
+    #获取用户权限
+    usermenuData = BackuserMenuuser.objects.filter(userid=uid)
+    menuStr = ''
+    for menu in usermenuData:
+        menuStr = menuStr + menu.menuid + ','
+    return render(request, 'management/initEditUser.html', {'actionURL': '/editUser', 'user': buser, 'menuStr': menuStr, 'resultData': resultData})
+
+#增加用户
+def addUser(request):
+    username = request.POST['username']
+    id = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(username))).replace('-', '')
+    comments = request.POST['comments']
+    userpwd = request.POST['userpwd']
+    nowTime = datetime.datetime.now()
+    buser = BackuserUserinfo(id=id, username=username, comments=comments, userpwd=userpwd,
+                            logins=0, answers=0, questions=0, lastlogintime=nowTime,
+                            createtime=nowTime, createid=1, userstatus=1,)
+    #权限
+    menupower = request.POST['menupower']
+    menus = menupower.split(',')
+    for m in menus:
+        if len(m) == 0:
+            continue
+        muid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(id.join(m)))).replace('-', '')
+        mu = BackuserMenuuser(id=muid, userid=id, menuid=m)
+        mu.save()
+    buser.save()
+    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+
+#编辑用户
+def editUser(request):
+    uid = request.POST['uid']
+    buser = BackuserUserinfo.objects.get(id=uid)
+    buser.username = request.POST['username']
+    buser.comments = request.POST['comments']
+    buser.save()
+    #权限
+    menupower = request.POST['menupower']
+    menus = menupower.split(',')
+    #删原来的权限
+    BackuserMenuuser.objects.filter(userid=uid).delete()
+    for m in menus:
+        if len(m) == 0:
+            continue
+        print m
+        muid = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(uid.join(m)))).replace('-', '')
+        mu = BackuserMenuuser(id=muid, userid=uid, menuid=m)
+        mu.save()
+
+    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+
+#删除用户
+def removeUser(request):
+    uid = request.GET['uid']
+    buser = BackuserUserinfo.objects.get(id=uid)
+    buser.delete()
+    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+
+#修改用户状态
+def modifyUserStatus(request):
+    uid = request.GET['uid']
+    ustatus= request.GET['ustatus']
+    buser = BackuserUserinfo.objects.get(id=uid)
+    buser.userstatus = ustatus
+    buser.save()
+    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+
+#菜单管理
+def menuManager(request):
+    #获取所有菜单
+    sql = 'select b.id id,b.title title,b.url url,p.title ptitle from backuser_backmenu b left join backuser_backmenu p on p.id = b.parentid'
+    menuData = BackuserBackmenu.objects.raw(sql)
+    #获取父级菜单
+    parentData = BackuserBackmenu.objects.filter(parentid=0)
+    return render(request, 'management/MenuManager.html', {'menuData': menuData, 'parentData': parentData}, )
+
+#添加菜单
+def addMenu(request):
+    url = request.POST['url']
+    menu = BackuserBackmenu(id=str(uuid.uuid5(uuid.NAMESPACE_DNS, str(uuid.uuid1()))).replace('-', ''), title=request.POST['title'], url=url, parentid=request.POST['pid'])
+    menu.save()
+    #获取所有菜单
+    sql = 'select b.id id,b.title title,b.url url,p.title ptitle from backuser_backmenu b left join backuser_backmenu p on p.id = b.parentid'
+    menuData = BackuserBackmenu.objects.raw(sql)
+
+    #获取父级菜单
+    parentData = BackuserBackmenu.objects.filter(parentid=0)
+    return render(request, 'management/MenuManager.html', {'menuData': menuData, 'parentData': parentData}, )

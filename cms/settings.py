@@ -39,7 +39,11 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'back_user',
     'back_theme',
-    'p2pmsg',
+    'back_question',
+    'back_answer',
+    'back_realuser',
+    'back_virtualuser',
+    'yythrift',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,7 +55,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'back_user.loginmdwl.QtsAuthenticationMiddleware'
+    #'back_user.loginmdwl.QtsAuthenticationMiddleware'
 )
 
 ROOT_URLCONF = 'cms.urls'
@@ -84,7 +88,7 @@ DATABASES = {
         'NAME': 'cms_db',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': 'root',
         'PORT': '3306',
     }
 }
