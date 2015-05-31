@@ -55,15 +55,34 @@
                     {header : '最后登录时间', name : 'lastlogintime', align : 'center', width : 120, sort:'clientSide'},
                     {header : '创建时间', name : 'createtime', align : 'center', width : 120, sort:'clientSide'},
                         {header : '创建人', name : 'createid', align : 'center', width : 80, sort:'clientSide'},
-                        {header : '状态', name : 'userstatus', align : 'center', width : 25, sort:'clientSide'},
                     {header : '操作', name : 'id', align : 'center', width : 100,sort:'',
                         renderer:function(colValue, rowData, rowIndex){
-                            	 return '<a href="javascript:;" onclick="modifyTheme('+colValue+')">编辑</a>&nbsp;&nbsp;' +
-                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">隐藏</a>&nbsp;&nbsp;' +
-                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">停用</a>';
-                             }} ]
+                            statusStr = rowData.userstatus == 1 ? '停用' : '启用';
+                            return '<a href="javascript:;" onclick="modifyUser(\''+colValue+'\')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" id="hidebtn_'+rowIndex+'" onclick="stopUser('+rowIndex+','+rowData.userstatus+',\''+colValue+'\')">'+statusStr+'</a>&nbsp;&nbsp;';
+                        }} ]
 
             });
+    }
+
+    function modifyUser(id){
+        window.location.href = '/back_user/initEditUser?uid='+id;
+    }
+    function stopUser(index,status,id){
+        status = status == 1 ? 2 : 1;
+        $.ajax({
+            url:"/back_user/modifyUserStatus",
+            data:"uid="+id+"&ustatus="+status,
+            success:function(result){
+                alert(result.message);
+                if(status == 2){
+                    $("#hidebtn_"+index).text('启用');
+                }else{
+                    $("#hidebtn_"+index).text('停用');
+                }
+                $("#hidebtn_"+index).attr('onclick','stopUser('+index+','+status+',\''+id+'\')');
+            }
+        });
     }
 
 </script>

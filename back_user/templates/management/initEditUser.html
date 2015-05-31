@@ -2,24 +2,25 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>增加后台用户</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
 </head>
 <body>
-<form action="/back_user{{ actionURL }}" method="post">
-    {% csrf_token %}
+<form action="/back_user{{ actionURL }}" method="post" id="editForm">
     {% if actionURL == '/editUser' %}
     <input type="hidden" name="uid" value="{{ user.id }}">
     {% endif %}
     用户名：<input type="text" name="username" value="{{ user.username }}" /><br />
     备注：<input type="text" name="comments" value="{{ user.comments }}" /><br />
     {% if actionURL == '/addUser' %}
-    密码：<input type="text" /><br />
-    重复密码：<input type="text" name="userpwd" /><br />
-    {% endif %}
+    密码：<input type="password" id="userpwd" name="userpwd" /><br />
+    重复密码：<input type="password" name="confirmUserpwd" /><br />
+    {% else %}
     登录次数：{{ user.logins }}
     出题数：{{ user.questions }}
     答题数：{{ user.answers }}<br />
     上次登录：{{ user.lastlogintime }}<br />
+    {% endif %}
     <input type="hidden" id="menupower" name="menupower" value="{{ menuStr }}" />
     {% for k,v in resultData.items %}
         {% for k2,v2 in v.items %}
@@ -32,10 +33,60 @@
         {% endfor %}
     {% endfor %}
 
-    <input type="submit" value="提交" />
+    <input type="button" value="提交" id="saveBtn" />
 </form>
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-validate.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
 <script type="text/javascript">
+    var val;
+    $(document).ready(function() {
+         val = $("#editForm").validate({
+            rules : {
+                    username : {
+                        required : true,
+                        minlength : 4,
+                        maxlength : 16
+                    },
+                    comments : {
+                        required : true
+                    },
+                    userpwd : {
+                        required : true,
+                        minlength : 8,
+                        maxlength : 16
+                    },
+                    confirmUserpwd : {
+                        required : true,
+                        equalTo : "#userpwd",
+                        minlength : 8,
+                        maxlength : 16
+                    }
+                },
+                messages : {
+                    username : {
+                        required : "请输入用户名",
+                        minlength : "用户名不得少于4位",
+                        maxlength : "用户名不得超过16位"
+                    },
+                    comments : {
+                        required : "请输入备注"
+                    },
+                    userpwd : {
+                        required : "请输入密码",
+                        minlength : "密码不得少于8位",
+                        maxlength : "密码不得少于16位"
+                    },
+                    confirmUserpwd : {
+                        required : "请输入密码",
+                        equalTo : "两次输入密码不一样",
+                        minlength : "密码不得少于8位",
+                        maxlength : "密码不得超过16位"
+                    }
+                }
+        });
+    });
+
     function checkMenu(key){
         if(key.checked){
             $('#menupower').val($('#menupower').val()+key.value+',')
@@ -53,6 +104,24 @@
             }
         }
     }
+
+    $("#saveBtn").click(function(){
+        if(val.valid()){
+            $.ajax({
+                type:"post",
+                url:$("#editForm").attr("action"),
+                data:$("#editForm").serialize(),
+                contentType:"application/x-www-form-urlencoded; charset=utf-8",
+                success:function(result){
+                    alert(result.message);
+                    if(result.status == '200'){
+                        window.location.href = "/back_user/showUsers";
+                    }
+                }
+            });
+        }
+
+    });
 </script>
 </body>
 </html>
