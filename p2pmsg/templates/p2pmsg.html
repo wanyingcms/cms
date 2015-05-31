@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet"  type="text/css" href="../../../static/operamasks-ui-2.0/css/default/om-default.css" />
+    <style>
+        .ans_tab{height: 200px;overflow:scroll;}
+        .msg_tab_left{border-style: double;width: 300px}
+        .msg_tab_right{border-style: double;width: 300px ; float: right;}
+
+    </style>
+
+    <script type="text/javascript" src="../../../static/operamasks-ui-2.0/js/jquery.min.js" ></script>
+    <script type="text/javascript" src="../../../static/operamasks-ui-2.0/js/operamasks-ui.min.js"></script>
+
+    <title></title>
+
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            $('#combo1').omCombo({
+                dataSource : '/p2pmsg/userType/'
+            });
+
+
+            $('#combo12').omCombo({
+
+                dataSource : '/p2pmsg/virtualUserList/',
+                //multi : true,
+                // optionField:function(data,index){
+                //    return '<font color="red">'+index+'：</font>'+data.text+'('+data.value+')';
+                // },
+                emptyText:'select one option!',
+                //value:'1',
+                editable:false,
+                lazyLoad:true,
+                listMaxHeight:440
+
+            });
+
+
+            $('#combol3').omCombo({
+
+                dataSource : '/p2pmsg/realUserList/',
+                //multi : true,
+                // optionField:function(data,index){
+                //    return '<font color="red">'+index+'：</font>'+data.text+'('+data.value+')';
+                // },
+                emptyText:'select one option!',
+                //value:'1',
+                editable:false,
+                lazyLoad:true,
+                listMaxHeight:440
+
+            });
+
+            //$('.ans_tab').children().bind(selectmsg)
+
+        $.ajax({//拉取聊天信息
+            url:"/p2pmsg/p2pmessage/",
+            success:function(result){
+
+                $("#msg_content").html('');
+                var htmlStr = ''
+                for(var i=0;i<result.length;i++){
+                    classStr = ''
+                    if(result[i].type == 1){
+                        classStr = 'msg_tab_left'
+                    }else{
+                        classStr = 'msg_tab_right'
+                    }
+                    htmlStr = htmlStr + "<table class="+ classStr +">" +
+                        "<tr><td>"+ result[i].user +"</td><td>"+result[i].sendtime+"</td></tr>"+
+                        "<tr><td>"+result[i].msg+"</td></tr>"+
+                    "</table>"
+
+                }
+                $("#msg_content").html(htmlStr);
+            }
+        });
+
+
+
+        $.ajax({//拉去自己回答的内容
+            url:"/p2pmsg/viranswer/",
+            success:function(result){
+
+                $(".ans_tab").html('');
+                var htmlStr = ''
+                for(var i=0;i<result.length;i++){
+
+                    htmlStr = htmlStr + "<table style=\"border-style: double;width: 300px\" onclick=\"selectmsg(this,"+result[i].msgid+")\">"+
+
+                    "<tr><td>"+result[i].user+"：</td><td>"+result[i].sendtime+"</td><td>赞："+result[i].zan+"</td></tr>"+
+                    "<tr><td>"+result[i].msg+"</td></tr>"+
+                    "</table>"
+
+                }
+                $(".ans_tab").html(htmlStr);
+            }
+        });
+
+
+            //提交选择的答案
+            $('#ans_form').submit(function() {
+
+                $(this).omAjaxSubmit({
+                    beforeSubmit:function(){
+                        if($("#ans_selected").length == 0 || $("#ans_selected")==undefined ){
+                            alert("请选择一个答案");
+                            return
+                        }
+                    },
+                    success:function(){
+                        //alert(111)
+                        //alert(responseText)
+                    }
+                });
+
+                return false;//返回false,阻止浏览器默认行为
+
+            });
+
+
+            $('#anscontent_form').submit(function() {
+
+                $(this).omAjaxSubmit({
+
+                    success:function(){
+                        //alert(111)
+                        //alert(responseText)
+                    }
+                });
+
+                return false;//返回false,阻止浏览器默认行为
+
+            });
+
+            $('#img_form').submit(function() {
+
+                $(this).omAjaxSubmit({
+
+                    success:function(){
+                        //alert(111)
+                        //alert(responseText)
+                    }
+                });
+
+                return false;//返回false,阻止浏览器默认行为
+
+            });
+
+
+        });
+        function selectmsg(obj,msgId){
+            var tables = $(obj).siblings();
+            var idinput = $("#hidmsgid");
+            idinput.val(msgId)
+            //alert(tables.length)
+            for(i=0;i<tables.length;i++){
+                $(tables[i]).css({"color":""});
+                $(tables[i]).removeAttr("id");
+
+            }
+            $(obj).css({"color":"red"}).attr("id","ans_selected")
+        }
+
+    </script>
+
+
+
+
+
+
+</head>
+<body>
+
+    <input id="combo1" />
+
+    <input type="button" onclick="alert($('#combo1').omCombo('value'));" value="getValue"/>
+    <br>
+    虚拟用户列表：</br>
+    <input id="combo12" /><br>
+
+    真实用户列表：<br>
+    <input id="combol3"/><br>
+
+    <div id="content">
+        <div id="msg_content"  style="height: 400px;width: 350px;border-style: dotted;">
+
+            <table class="msg_tab_left">
+                <tr><td>用户1：</td><td>2013-10-08</td></tr>
+                <tr><td>内容内容内容</td></tr>
+            </table>
+
+
+            <table class="msg_tab_left">
+                <tr><td>用户1：</td><td>2013-10-08</td></tr>
+                <tr><td>内容内容内容</td></tr>
+            </table>
+
+
+            <table class="msg_tab_right">
+                <tr><td>2013-10-08</td><td>用户1：</td></tr>
+                <tr><td>内容内容内容</td></tr>
+            </table>
+        </div>
+
+
+
+        <div style="margin-top:-400px ; height: 400px;width: 350px;border-style: dotted; float:right">
+            <form id="ans_form" action="/p2pmsg/reanswer/" method="post">
+                <input id="hidmsgid"  name="msgid" value="" type="hidden"/>
+            <div class="ans_tab" >
+
+                <table style="border-style: double;width: 300px" onclick="selectmsg(this,123)">
+
+                    <tr><td>用户1：</td><td>2013-10-08</td><td>赞：100</td></tr>
+                    <tr><td>内容内容内容</td></tr>
+                </table>
+
+
+                <table style="border-style: double;width: 300px" onclick="selectmsg(this,123)">
+                    <tr><td>用户1：</td><td>2013-10-08</td><td>赞：100</td></tr>
+                    <tr><td>内容内容内容</td></tr>
+                </table>
+                <table style="border-style: double;width: 300px" onclick="selectmsg(this,123)">
+                    <tr><td>用户1：</td><td>2013-10-08</td><td>赞：100</td></tr>
+                    <tr><td>内容内容内容</td></tr>
+                </table>
+                <table style="border-style: double;width: 300px" onclick="selectmsg(this,123)">
+                    <tr><td>用户1：</td><td>2013-10-08</td><td>赞：100</td></tr>
+                    <tr><td>内容内容内容</td></tr>
+                </table>
+                <table style="border-style: double;width: 300px" onclick="selectmsg(this,123)">
+                    <tr><td>用户1：</td><td>2013-10-08</td><td>赞：100</td></tr>
+                    <tr><td>内容内容内容</td></tr>
+                </table>
+
+            </div>
+                 <input type="submit" value="回答"/>
+            </form>
+            <div>
+                <form id="img_form" action="/p2pmsg/reanswer/" method="post" enctype="multipart/form-data">
+
+
+                <div>
+
+                </div>
+                <input name="imagefile" type="file" value="上传图片"/>
+                <button>上传</button>
+
+                </form>
+            </div>
+
+            <div><!--表情 -->
+                表情
+
+            </div>
+
+            <div>
+                <form id="anscontent_form" action="/p2pmsg/reanswer/" method="post">
+                    <textarea name="msgcontent">
+
+                    </textarea>
+                        <input type="submit" value="提交" />
+                </form>
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</body>
+</html>
+

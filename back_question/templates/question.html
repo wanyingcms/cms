@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>题目管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
+</head>
+<body>
+<select id="showThemeType">
+    <option value="0">全部分类</option>
+    {% for type in themeType %}
+        <option value="{{ type.value }}">{{ type.text }}</option>
+    {% endfor %}
+</select>
+
+ <select id="showTheme">
+    <option value="0">全部主题</option>
+    {% for tm in theme %}
+        <option value="{{ tm.value }}">{{ tm.text }}</option>
+    {% endfor %}
+</select>
+
+<select id="userType">
+     <option value="0">全部用户</option>
+     <option value="1">虚拟用户</option>
+     <option value="2">真实用户</option>
+</select>
+
+<select id="userStatus">
+     <option value="0">全部</option>
+     <option value="1">隐藏状态</option>
+     <option value="2">非隐藏状态</option>
+</select>
+
+<br />
+
+<input type="text" value="题目内容" />
+<input type="text" value="创建者昵称/ID" />
+<input type="text" value="题目描述" />
+
+<br />
+
+发布时间：<input id="containerStart" />至<input id="containerEnd" />
+<input type="text" value="题目ID" />
+
+<br />
+
+回答数量：<input type="text" value="0" />至<input type="text" value="9999999999" />
+分享数量：<input type="text" value="0" />至<input type="text" value="9999999999" />
+
+<br />
+
+<select id="showBackUser">
+    <option value="0">请选择运维人员</option>
+    {% for user in backUser %}
+        <option value="{{ user.value }}">{{ user.text }}</option>
+    {% endfor %}
+</select>
+
+<input type="button" value="搜索" id="searchBtn" /><input type="button" value="导出" id="exportBtn" />
+<input type="button" value="添加" id="addBtn" />
+<table id="grid"></table>
+
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-draggable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-position.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-calendar.js"></script>
+<script type="text/javascript">
+        $(document).ready(function() {
+            //时间控件初始化
+            $('#containerStart').omCalendar({showTime : true});
+            $('#containerEnd').omCalendar({showTime : true});
+            //主题列表
+            $('#grid').omGrid({
+                dataSource : 'searchQuestion?method=fast&question=init',
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center',sort:'clientSide'},
+                             {header : '题目', name : 'city', width : 50, align : 'left',sort:''},
+                    {header : '主题', name : 'address', align : 'left', width : 100,sort:''},
+                    {header : '创建者', name : 'address', align : 'left', width : 100,sort:'clientSide'},
+                    {header : '题目描述', name : 'city', align : 'left', width : 'autoExpand',sort:''},
+                    {header : '发布时间', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                        {header : '举报', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                        {header : '分享', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '操作', name : 'id', align : 'left', width : 150,sort:'',
+                        renderer:function(colValue, rowData, rowIndex){
+                            	 return '<a href="javascript:;" onclick="modifyQuestion('+colValue+')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideQuestion('+colValue+')">隐藏</a>';
+                             }} ]
+
+            });
+
+            //分类管理
+            $( "#dialog-modal").omDialog({
+                autoOpen: false,
+                width:400,
+                height: 300,
+                modal: true
+            });
+        });
+
+    //搜索
+    $("#searchBtn").click(function() {
+        $('#grid').omGrid({
+                dataSource : 'searchTheme?method=fast&theme=search&createUser='+$("#createUser").val()+'&showThemeType='+$("#showThemeType").val()+'&showBackUser='+$("#showBackUser").val(),
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
+                             {header : '图片', name : 'city', width : 50, align : 'left'},
+                             {header : '主题名称', name : 'address', align : 'left', width : 100},
+                    {header : '创建者', name : 'city', align : 'left', width : 100},
+                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
+                    {header : '打开次数', name : 'city', align : 'left', width : 50},
+                    {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'serverSide'},
+                    {header : '操作', name : 'city', align : 'left', width : 150} ]
+            });
+    });
+
+    //导出
+    $("#exportBtn").click(function() {
+        window.location.href = '/back_question/exportExcel'
+    });
+
+    //编辑
+    function modifyQuestion(questionId){
+        window.location.href = "/back_question/editQuestionPage?qid="+questionId;
+    }
+
+    //添加
+    $("#addBtn").click(function() {
+        window.location.href = "/back_question/addQuestionPage";
+    });
+
+    //隐藏
+    function hideQuestion(questionId){
+        $.ajax({
+            url:"/back_theme/hideTheme",
+            data:"qid="+questionId,
+            success: function (result) {
+                alert(result.message);
+            }
+        });
+    }
+
+
+</script>
+</html>
+

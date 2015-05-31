@@ -39,7 +39,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'back_user',
     'back_theme',
+    'back_question',
+    'back_answer',
+    'back_realuser',
+    'back_virtualuser',
     'p2pmsg',
+    #'yythrift',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -51,7 +56,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'back_user.loginmdwl.QtsAuthenticationMiddleware'
+    #'back_user.loginmdwl.QtsAuthenticationMiddleware'
 )
 
 ROOT_URLCONF = 'cms.urls'

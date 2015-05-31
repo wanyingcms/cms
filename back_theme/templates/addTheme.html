@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>添加主题</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
+</head>
+<body>
+<form id="saveThemeForm">
+<input type="hidden" name="themeId" value="0" />
+<select name="className" id="className">
+    <option value="0">请选择主题分类</option>
+    {% for type in themeType %}
+        <option value="{{ type.value }}">{{ type.text }}</option>
+    {% endfor %}
+</select>
+<select name="vUserGroup" id="vUserGroup">
+    <option value="0">请选择虚拟用户组</option>
+    {% for group in vUserGroup %}
+        <option value="{{ group.value }}">{{ group.text }}</option>
+    {% endfor %}
+</select>
+<select id="vUser" name="uid">
+    <option value="0">请选择虚拟用户</option>
+    {% for user in vUser %}
+        <option value="{{ user.value }}">{{ user.text }}</option>
+    {% endfor %}
+</select>
+<input type="button" id="randomBtn" value="随机" /><br />
+<input type="text" name="themeTitle" id="themeTitle" value="主题名称" />
+<br />
+<input id="file_upload" name="file_upload" type="file" />
+<button value="上传" onclick="$('#file_upload').omFileUpload('upload')">上传</button>
+<div id="response" style="font-weight: bold;color: red;"></div>
+<br />
+
+<textarea id="themeContent" name="themeContent"></textarea><br />
+</form>
+题目数量：0 <br />
+回答数量：0 <br />
+
+<input type="button" value="保存" id="saveBtn" />
+<input type="button" value="取消" />
+
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-fileupload.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-validate.js"></script>
+
+<script type="text/javascript">
+    //切换虚拟用户组级联虚拟用户
+    $("#vUserGroup").change(function (){
+        $.ajax({
+            url:"/back_virtualuser/showVirtualUser",
+            data:"vUserGroup="+$("#vUserGroup").val(),
+            success:function(result){
+                restoreVUser();
+                for(var i =0;i<result.length;i++){
+                    $("#vUser").append("<option value=\""+result[i].value+"\">"+result[i].text+"</option>");
+                }
+            }
+        });
+    });
+
+    //还原虚拟用户下拉框
+    function restoreVUser(){
+        $("#vUser").html("<option value=\"0\">请选择虚拟用户</option>");
+    }
+
+    function praseDate(date){
+		return date.fullYear + '-' + date.month + '-' + date.day + ' ' + date.hours + ':' + date.minutes + ':' + date.seconds;
+	}
+
+    //上传图片
+    $('#file_upload').omFileUpload({
+	    action : '/back_theme/uploadImg',
+	    swf : '/static/operamasks-ui-2.0/swf/om-fileupload.swf',
+	    multi : true,
+	    onComplete : function(ID,fileObj,response,data,event){
+	    	var jsonData = eval("("+response+")");
+
+
+	    },
+        onSelect : function(ID,fileObj,event){
+	    	var msg = '文件信息\n';
+    		msg += '文件ID：' + ID + '\n';
+    		msg += '文件名：' + fileObj.name + '\n';
+    		msg += '文件大小：' + fileObj.size + ' Bytes\n';
+    		msg += '文件创建时间：' + praseDate(fileObj.creationDate) + '\n';
+    		msg += '文件最后修改时间：' + praseDate(fileObj.modificationDate) + '\n';
+    		msg += '文件类型：' + fileObj.type + '\n';
+    		$('#response').append('<img src="'+fileObj.name+'" />')
+	    				  .append('<hr />');
+	    }
+    });
+
+    //保存
+    $("#saveBtn").click(function (){
+        var aaa = $("#saveThemeForm").validate({
+            rules : {
+                    themeTitle : {
+                        required : true,
+                        minlength : 5,
+                        maxlength : 10
+                    }
+                },
+                messages : {
+                    themeTitle : {
+                        required : "请输入密码",
+                        minlength : "密码长度不够",
+                        maxlength : "密码长度不能超过10"
+                    }
+                }
+        });
+        alert(aaa.valid())
+        $.ajax({
+            type:"post",
+            url:"/back_theme/saveTheme",
+            data:$("#saveThemeForm").serialize(),
+            contentType:"application/x-www-form-urlencoded; charset=utf-8",
+            success:function(result){
+                alert(result.message);
+            }
+        });
+    });
+
+
+
+
+</script>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>虚拟用户管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
+</head>
+<body>
+<select id="showThemeType">
+    <option value="0">全部</option>
+    {% for group in vGroup %}
+        <option value="{{ group.value }}">{{ group.text }}</option>
+    {% endfor %}
+</select>
+<a href="javascript:;" id="typeBtn">分类管理</a>
+<input id="createUser" value="虚拟用户名" />
+<input id="createUser" value="用户备注" /><br />
+
+</select><input type="button" value="搜索" id="searchBtn" /><input type="button" value="导出" id="exportBtn" />
+<input type="button" value="添加" id="addBtn" />
+<table id="grid"></table>
+
+<div id="dialog-modal" title="分类管理">
+    当前分类列表：
+    <div id="typeDiv">
+
+    </div>
+    <input type="text" value="新分类名称" /><br />
+    新分类，一旦建立，无法删除，只能变更分类名称<br />
+    <input type="button" value="保存" /><input type="button" value="取消" onclick="closeDialog()" />
+</div>
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-draggable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-position.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-dialog.js"></script>
+<script type="text/javascript">
+        $(document).ready(function() {
+            //主题列表
+            $('#grid').omGrid({
+                dataSource : 'searchVirtualUser?method=fast&vUserGroup=0',
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center',sort:'clientSide'},
+                             {header : '图片', name : 'city', width : 50, align : 'left',sort:'',
+                             renderer:function(colValue, rowData, rowIndex){
+                            	 return '<img src="'+colValue+'" />';
+                             }},
+                    {header : '昵称', name : 'address', align : 'left', width : 100,sort:''},
+                    {header : '备注', name : 'city', align : 'left', width : 'autoExpand',sort:'clientSide'},
+                    {header : '发题数量', name : 'id', align : 'left', width : 50,sort:''},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '操作', name : 'id', align : 'left', width : 150,sort:'',
+                        renderer:function(colValue, rowData, rowIndex){
+                            	 return '<a href="javascript:;" onclick="modifyTheme('+colValue+')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">隐藏</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideTheme('+colValue+')">停用</a>';
+                             }} ]
+
+            });
+
+            //分类管理
+            $( "#dialog-modal").omDialog({
+                autoOpen: false,
+                width:400,
+                height: 300,
+                modal: true
+            });
+        });
+
+    //搜索
+    $("#searchBtn").click(function() {
+        $('#grid').omGrid({
+                dataSource : 'searchTheme?method=fast&theme=search&createUser='+$("#createUser").val()+'&showThemeType='+$("#showThemeType").val()+'&showBackUser='+$("#showBackUser").val(),
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
+                             {header : '图片', name : 'city', width : 50, align : 'left'},
+                             {header : '主题名称', name : 'address', align : 'left', width : 100},
+                    {header : '创建者', name : 'city', align : 'left', width : 100},
+                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
+                    {header : '打开次数', name : 'city', align : 'left', width : 50},
+                    {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
+                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'serverSide'},
+                    {header : '操作', name : 'city', align : 'left', width : 150} ]
+            });
+    });
+
+    //导出
+    $("#exportBtn").click(function() {
+        window.location.href = '/back_theme/exportExcel'
+    });
+
+    //编辑
+    function modifyTheme(themeId){
+        window.location.href = "/back_theme/editThemePage?tid="+themeId;
+    }
+
+    //编辑
+    $("#addBtn").click(function() {
+        window.location.href = "/back_theme/addThemePage";
+    });
+
+    //隐藏
+    function hideTheme(themeId){
+        $.ajax({
+            url:"/back_theme/hideTheme",
+            data:"tid="+themeId,
+            success: function (result) {
+                alert(result.message);
+            }
+        });
+    }
+
+    //分类管理弹窗
+    $("#typeBtn").click(function(){
+        $( "#dialog-modal").omDialog('open');
+        $.ajax({
+            url:"/back_theme/initThemeType",
+            success:function(result){
+                $("#typeDiv").html('');
+                for(var i=0;i<result.length;i++){
+                    $("#typeDiv").append("<input id=\""+result[i].id+"-ttype\" type=\"text\" value=\""+result[i].typeTitle+"\" />"+result[i].themeCount+"个主题<br />");
+                }
+            }
+        });
+    });
+
+    function closeDialog(){
+        $( "#dialog-modal").omDialog('close');
+    }
+
+
+</script>
+</html>
+
