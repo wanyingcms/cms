@@ -64,9 +64,16 @@ urlpatterns = [
     url(r'^back_user/editUser$', 'back_user.views.editUser'),
     url(r'^back_user/showUsers$', 'back_user.views.showUsers'),
     url(r'^back_user/showUsersToJson$', 'back_user.views.showUsersToJson'),
-    url(r'^back_user/removeUser$', 'back_user.views.removeUser'),
     url(r'^back_user/modifyUserStatus$', 'back_user.views.modifyUserStatus'),
     url(r'^back_user/menuManager$', 'back_user.views.menuManager'),
     url(r'^back_user/addMenu$', 'back_user.views.addMenu'),
+    url(r'^back_user/showMenusToJson$', 'back_user.views.showMenusToJson'),
+    url(r'^back_user/showMenus$', 'back_user.views.showMenus'),
+    url(r'^back_user/initAddMenu$', 'back_user.views.initAddMenu'),
+    url(r'^back_user/initEditMenu$', 'back_user.views.initEditMenu'),
+    url(r'^back_user/addMenu$', 'back_user.views.addMenu'),
+    url(r'^back_user/editMenu$', 'back_user.views.editMenu'),
+    url(r'^back_user/removeMenu$', 'back_user.views.removeMenu'),
+
 
 ]
