@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>编辑后台菜单</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+</head>
+<body>
+<form action="/back_user{{ actionURL }}" method="post" id="editForm">
+
+    {% if actionURL == '/editMenu' %}
+    <input type="hidden" name="mid" value="{{ menu.id }}">
+    {% endif %}
+    菜单名称：<input type="text" name="title" value="{{ menu.title }}" /><br />
+    URL：<input type="text" name="url" value="{{ menu.url }}" /><br />
+    父级菜单：<select name="pid">
+        <option value="0">无</option>
+        {% for p in parentData %}
+            <option value="{{ p.id }}"
+                    {% if p.id == menu.parentid %}
+                        selected="selected"
+                    {% endif %}
+                    >{{ p.title }}</option>
+        {% endfor %}
+    </select><br />
+
+    <input type="button" value="提交" id="saveBtn" />
+</form>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-validate.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript">
+    var val;
+    $(document).ready(function() {
+         val = $("#editForm").validate({
+            rules : {
+                    title : {
+                        required : true
+                    },
+                    url : {
+                        required : true
+                    }
+                },
+                messages : {
+                    username : {
+                        required : "请输入菜单名称"
+                    },
+                    comments : {
+                        required : "请输入URL"
+                    }
+                }
+        });
+    });
+
+    $("#saveBtn").click(function(){
+        if(val.valid()){
+            $.ajax({
+                type:"post",
+                url:$("#editForm").attr("action"),
+                data:$("#editForm").serialize(),
+                contentType:"application/x-www-form-urlencoded; charset=utf-8",
+                success:function(result){
+                    alert(result.message);
+                    if(result.status == '200'){
+                        window.location.href = "/back_user/showMenus";
+                    }
+                }
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

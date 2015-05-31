@@ -44,7 +44,7 @@
 
     function showUsers(url){
         $('#grid').omGrid({
-                limit : 10,
+                limit : 20,
                 dataSource : url,
                 colModel : [ {header : 'ID', name : 'id', width : 220, align : 'center',sort:'clientSide'},
                              {header : '用户名', name : 'username', width : 80, align : 'center',sort:''},
@@ -59,7 +59,7 @@
                         renderer:function(colValue, rowData, rowIndex){
                             statusStr = rowData.userstatus == 1 ? '停用' : '启用';
                             return '<a href="javascript:;" onclick="modifyUser(\''+colValue+'\')">编辑</a>&nbsp;&nbsp;' +
-                                         '<a href="javascript:;" id="hidebtn_'+rowIndex+'" onclick="stopUser('+rowIndex+','+rowData.userstatus+',\''+colValue+'\')">'+statusStr+'</a>&nbsp;&nbsp;';
+                                         '<a href="javascript:;" id="stopbtn_'+rowIndex+'" onclick="stopUser('+rowIndex+','+rowData.userstatus+',\''+colValue+'\')">'+statusStr+'</a>&nbsp;&nbsp;';
                         }} ]
 
             });
@@ -76,11 +76,11 @@
             success:function(result){
                 alert(result.message);
                 if(status == 2){
-                    $("#hidebtn_"+index).text('启用');
+                    $("#stopbtn_"+index).text('启用');
                 }else{
-                    $("#hidebtn_"+index).text('停用');
+                    $("#stopbtn_"+index).text('停用');
                 }
-                $("#hidebtn_"+index).attr('onclick','stopUser('+index+','+status+',\''+id+'\')');
+                $("#stopbtn_"+index).attr('onclick','stopUser('+index+','+status+',\''+id+'\')');
             }
         });
     }
