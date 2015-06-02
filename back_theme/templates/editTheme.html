@@ -2,9 +2,104 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <title>编辑主题</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
 </head>
 <body>
+<form id="saveThemeForm">
+<input type="hidden" name="themeId" value="{{ themeId }}" />
+<select id="themeType" name="themeType">
+    <option value="0">请选择主题分类</option>
+    {% for type in themeType %}
+        <option value="{{ type.value }}"
+                {% if tType == type.value %}
+                    selected = 'selected'
+                {% endif %}
+                >{{ type.text }}</option>
+    {% endfor %}
+
+    themeType, 'vUserID': vUserID, 'vUserName': vUserName,
+                                                 'tTitle': tTitle, 'tContent': tContent, 'tImg': tImg
+</select>
+创建者：{{ vUserName }}
+创建者ID：{{ vUserID }}<br />
+<input type="text" id="themeTitle" value="{{ tTitle }}" name="themeTitle" />
+<br />
+<input id="file_upload" name="file_upload" type="file" />
+<button value="上传" onclick="$('#file_upload').omFileUpload('upload')">上传</button>
+<div id="response" style="font-weight: bold;color: red;"></div>
+<br />
+
+<textarea id="themeContent" name="themeContent">{{ tContent }}</textarea><br />
+题目数量：{{ questions }} <br />
+回答数量：{{ answers }} <br />
+</form>
+<input type="button" value="保存" id="saveBtn" />
+<input type="button" value="取消" />
 
 </body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-fileupload.js"></script>
+<script type="text/javascript">
+    //切换虚拟用户组级联虚拟用户
+    $("#vUserGroup").change(function (){
+        if($("#vUserGroup").val() == '0'){
+            restoreVUser();
+            return
+        }
+        $.ajax({
+            url:"/back_theme/showVirtualUser",
+            data:"vUserGroup="+$("#vUserGroup").val(),
+            success:function(result){
+                restoreVUser();
+                for(var i =0;i<result.length;i++){
+                    $("#vUser").append("<option value=\""+result[i].value+"\">"+result[i].text+"</option>");
+                }
+            }
+        });
+    });
+
+    //还原虚拟用户下拉框
+    function restoreVUser(){
+        $("#vUser").html("<option value=\"0\">请选择虚拟用户</option>");
+    }
+
+    function praseDate(date){
+		return date.fullYear + '-' + date.month + '-' + date.day + ' ' + date.hours + ':' + date.minutes + ':' + date.seconds;
+	}
+
+    //上传图片
+    $('#file_upload').omFileUpload({
+	    action : '/back_theme/uploadImg',
+	    swf : '/static/operamasks-ui-2.0/swf/om-fileupload.swf',
+	    multi : true,
+	    onComplete : function(ID,fileObj,response,data,event){
+	    	var jsonData = eval("("+response+")");
+	    	$('#response').append('<img src="'+jsonData.fileUrl+'" />')
+	    				  .append('<hr />');
+
+	    }
+    });
+
+    //保存
+    $("#saveBtn").click(function (){
+        $.ajax({
+            type:"post",
+            url:"/back_theme/saveTheme",
+            data:$("#saveThemeForm").serialize(),
+            contentType:"application/x-www-form-urlencoded; charset=utf-8",
+            success:function(result){
+                alert(result.message);
+            }
+        });
+    });
+
+</script>
 </html>

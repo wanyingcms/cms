@@ -8,7 +8,7 @@
 </head>
 <body>
 <form id="saveThemeForm">
-<input type="hidden" name="themeId" value="0" />
+<input type="hidden" name="themeId" id="themeId" value="0" />
 <select name="className" id="className">
     <option value="0">请选择主题分类</option>
     {% for type in themeType %}
@@ -16,12 +16,12 @@
     {% endfor %}
 </select>
 <select name="vUserGroup" id="vUserGroup">
-    <option value="0">请选择虚拟用户组</option>
+    <option value="0">全部</option>
     {% for group in vUserGroup %}
         <option value="{{ group.value }}">{{ group.text }}</option>
     {% endfor %}
 </select>
-<select id="vUser" name="uid">
+<select id="vUser" name="vUser">
     <option value="0">请选择虚拟用户</option>
     {% for user in vUser %}
         <option value="{{ user.value }}">{{ user.text }}</option>
@@ -31,7 +31,6 @@
 <input type="text" name="themeTitle" id="themeTitle" value="主题名称" />
 <br />
 <input id="file_upload" name="file_upload" type="file" />
-<button value="上传" onclick="$('#file_upload').omFileUpload('upload')">上传</button>
 <div id="response" style="font-weight: bold;color: red;"></div>
 <br />
 
@@ -39,7 +38,6 @@
 </form>
 题目数量：0 <br />
 回答数量：0 <br />
-
 <input type="button" value="保存" id="saveBtn" />
 <input type="button" value="取消" />
 
@@ -78,32 +76,23 @@
 		return date.fullYear + '-' + date.month + '-' + date.day + ' ' + date.hours + ':' + date.minutes + ':' + date.seconds;
 	}
 
-    //上传图片
-    $('#file_upload').omFileUpload({
-	    action : '/back_theme/uploadImg',
+    $(document).ready(function() {
+	  $('#file_upload').omFileUpload({
+	    action : '/back_theme/saveTheme',
 	    swf : '/static/operamasks-ui-2.0/swf/om-fileupload.swf',
-	    multi : true,
+	    method   : 'POST',
 	    onComplete : function(ID,fileObj,response,data,event){
 	    	var jsonData = eval("("+response+")");
-
-
-	    },
-        onSelect : function(ID,fileObj,event){
-	    	var msg = '文件信息\n';
-    		msg += '文件ID：' + ID + '\n';
-    		msg += '文件名：' + fileObj.name + '\n';
-    		msg += '文件大小：' + fileObj.size + ' Bytes\n';
-    		msg += '文件创建时间：' + praseDate(fileObj.creationDate) + '\n';
-    		msg += '文件最后修改时间：' + praseDate(fileObj.modificationDate) + '\n';
-    		msg += '文件类型：' + fileObj.type + '\n';
-    		$('#response').append('<img src="'+fileObj.name+'" />')
-	    				  .append('<hr />');
+            alert(jsonData.message);
+            window.location.href="/back_theme/themeIndex";
 	    }
-    });
+	  });
+	});
 
     //保存
     $("#saveBtn").click(function (){
-        var aaa = $("#saveThemeForm").validate({
+
+        var val = $("#saveThemeForm").validate({
             rules : {
                     themeTitle : {
                         required : true,
@@ -119,16 +108,21 @@
                     }
                 }
         });
-        alert(aaa.valid())
-        $.ajax({
-            type:"post",
-            url:"/back_theme/saveTheme",
-            data:$("#saveThemeForm").serialize(),
-            contentType:"application/x-www-form-urlencoded; charset=utf-8",
-            success:function(result){
-                alert(result.message);
-            }
-        });
+
+        if(val.valid()){
+            $('#file_upload').omFileUpload(
+                    {
+                        'actionData':{
+                            'themeId':document.getElementById('themeId').value,
+                            'className':document.getElementById('className').value,
+                            'vUserGroup':document.getElementById('vUserGroup').value,
+                            'vUser':document.getElementById('vUser').value,
+                            'themeTitle':document.getElementById('themeTitle').value,
+                            'themeContent':document.getElementById('themeContent').value}
+                    }
+            );
+            $('#file_upload').omFileUpload('upload');
+        }
     });
 
 
