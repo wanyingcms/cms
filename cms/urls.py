@@ -37,14 +37,14 @@ urlpatterns = [
     url(r'^back_theme/saveTheme$', 'back_theme.views.saveTheme'),
     url(r'^back_theme/initThemeType$', 'back_theme.views.initThemeType'),
     url(r'^back_theme/saveThemeType$', 'back_theme.views.saveThemeType'),
-    url(r'^back_theme/uploadImg$', 'back_theme.views.uploadImg'),
 
     url(r'^back_question/questionIndex$', 'back_question.views.questionIndex'),
     url(r'^back_question/addQuestionPage$', 'back_question.views.addQuestionPage'),
     url(r'^back_question/editQuestionPage$', 'back_question.views.editQuestionPage'),
     url(r'^back_question/saveQuestion$', 'back_question.views.saveQuestion'),
     url(r'^back_question/hideQuestion$', 'back_question.views.hideQuestion'),
-    url(r'^back_question/searchQuestion$', 'back_question.views.searchQuestion'),
+    url(r'^back_question/searchToTableData$', 'back_question.views.searchToTableData'),
+
 
     url(r'^back_answer/answerIndex$', 'back_answer.views.answerIndex'),
     url(r'^back_answer/searchQuestion$', 'back_answer.views.searchQuestion'),
@@ -54,6 +54,8 @@ urlpatterns = [
     url(r'^back_virtualuser/showVirtualUser$', 'back_virtualuser.views.showVirtualUser'),
     url(r'^back_virtualuser/editVirtualUserPage$', 'back_virtualuser.views.editVirtualUserPage'),
     url(r'^back_virtualuser/addVirtualUserPage$', 'back_virtualuser.views.addVirtualUserPage'),
+    url(r'^back_virtualuser/initUserGroup$', 'back_virtualuser.views.initUserGroup'),
+
 
     url(r'^back_realuser/realuserIndex$', 'back_realuser.views.realuserIndex'),
     url(r'^back_realuser/searchRealUser$', 'back_realuser.views.searchRealUser'),
@@ -75,5 +77,8 @@ urlpatterns = [
     url(r'^back_user/editMenu$', 'back_user.views.editMenu'),
     url(r'^back_user/removeMenu$', 'back_user.views.removeMenu'),
 
-
+    url(r'^back_other/aboutus$', 'back_other.views.aboutus'),
+    url(r'^back_other/service$', 'back_other.views.service'),
+    url(r'^back_other/saveAboutus$', 'back_other.views.saveAboutus'),
+    url(r'^back_other/saveService$', 'back_other.views.saveService'),
 ]
