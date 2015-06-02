@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>关于我们</title>
+</head>
+<body>
+<form id="saveForm">
+关于我们（web）<br />
+<textarea name="webData">
+    {{ webData }}
+</textarea><br />
+关于我们（APP）<br />
+<textarea name="appData">
+    {{ appData }}
+</textarea><br />
+<input id="saveBtn" type="button" value="保存">
+</form>
+</body>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript">
+    $("#saveBtn").click(function (){
+        $.ajax({
+            type:"post",
+            url:"/back_other/saveAboutus",
+            data:$("#saveForm").serialize(),
+            contentType:"application/x-www-form-urlencoded; charset=utf-8",
+            success:function(result){
+                alert(result.message);
+                if(result.status == 200){
+                    location.reload()
+                }
+
+            }
+        });
+    });
+</script>
+</html>
