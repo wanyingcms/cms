@@ -141,6 +141,8 @@ class User:
    - stop
    - groupid
    - utype
+   - img
+   - imgs
   """
 
   thrift_spec = (
@@ -161,9 +163,11 @@ class User:
     (14, TType.I32, 'stop', None, None, ), # 14
     (15, TType.STRING, 'groupid', None, None, ), # 15
     (16, TType.I32, 'utype', None, None, ), # 16
+    (17, TType.STRING, 'img', None, None, ), # 17
+    (18, TType.STRING, 'imgs', None, None, ), # 18
   )
 
-  def __init__(self, uid=None, nickName=None, mobile=None, passwd=None, remark=None, quesNumber=None, answerNUmber=None, laud=None, signNumber=None, lastSignDate=None, createDate=None, stopDate=None, hide=None, stop=None, groupid=None, utype=None,):
+  def __init__(self, uid=None, nickName=None, mobile=None, passwd=None, remark=None, quesNumber=None, answerNUmber=None, laud=None, signNumber=None, lastSignDate=None, createDate=None, stopDate=None, hide=None, stop=None, groupid=None, utype=None, img=None, imgs=None,):
     self.uid = uid
     self.nickName = nickName
     self.mobile = mobile
@@ -180,6 +184,8 @@ class User:
     self.stop = stop
     self.groupid = groupid
     self.utype = utype
+    self.img = img
+    self.imgs = imgs
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -270,6 +276,16 @@ class User:
           self.utype = iprot.readI32();
         else:
           iprot.skip(ftype)
+      elif fid == 17:
+        if ftype == TType.STRING:
+          self.img = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 18:
+        if ftype == TType.STRING:
+          self.imgs = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -344,6 +360,14 @@ class User:
       oprot.writeFieldBegin('utype', TType.I32, 16)
       oprot.writeI32(self.utype)
       oprot.writeFieldEnd()
+    if self.img is not None:
+      oprot.writeFieldBegin('img', TType.STRING, 17)
+      oprot.writeString(self.img)
+      oprot.writeFieldEnd()
+    if self.imgs is not None:
+      oprot.writeFieldBegin('imgs', TType.STRING, 18)
+      oprot.writeString(self.imgs)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -369,6 +393,8 @@ class User:
     value = (value * 31) ^ hash(self.stop)
     value = (value * 31) ^ hash(self.groupid)
     value = (value * 31) ^ hash(self.utype)
+    value = (value * 31) ^ hash(self.img)
+    value = (value * 31) ^ hash(self.imgs)
     return value
 
   def __repr__(self):

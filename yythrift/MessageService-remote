@@ -24,7 +24,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('Usage: ' + sys.argv[0] + ' [-h host[:port]] [-u url] [-f[ramed]] [-s[sl]] function [arg1 [arg2...]]')
   print('')
   print('Functions:')
-  print('  bool sendMessage(string toUid, string fr, string type, string content)')
+  print('  string sendMessage(string toUid, string fr, string type, string content)')
   print('   resaveAllMessage(i64 lastDate, i32 types, i64 date, string coontent)')
   print('')
   sys.exit(0)

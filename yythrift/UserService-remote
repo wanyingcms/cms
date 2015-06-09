@@ -25,19 +25,19 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('')
   print('Functions:')
   print('   findVirtualGroup()')
-  print('  bool insterVirtualGroup(GroupList glist)')
+  print('  string instertVirtualGroup( groups)')
   print('   findVirtual(string groupid, string name, string remark, i32 start, i32 count)')
-  print('  bool insertVirtual(User user)')
-  print('  bool insertOrEditVirtual(User user)')
-  print('  bool findUserById(string userId)')
-  print('  bool hideVirtual(string vid, i32 hide)')
-  print('  bool stopVirtual(string vid, i32 stop)')
+  print('  string insertVirtual(User user)')
+  print('  string insertOrEditVirtual(User user)')
+  print('  string findUserById(string userId)')
+  print('  string hideVirtual(string vid, i32 hide)')
+  print('  string stopVirtual(string vid, i32 stop)')
   print('   findGroup()')
-  print('  bool insterGroup(GroupList group)')
-  print('  bool editGroup( groupList)')
+  print('  string instertGroup( groups)')
+  print('  string editGroup( groupList)')
   print('   findUser(string groupId, string nickName, string mobile, string startSign, string endSign, i32 start, i32 count)')
-  print('  bool setGroup(string uid, string group)')
-  print('  bool stopUser(string uid, i32 day)')
+  print('  string setGroup(string uid, string group)')
+  print('  string stopUser(string uid, i32 day)')
   print('')
   sys.exit(0)
 
@@ -100,11 +100,11 @@ if cmd == 'findVirtualGroup':
     sys.exit(1)
   pp.pprint(client.findVirtualGroup())
 
-elif cmd == 'insterVirtualGroup':
+elif cmd == 'instertVirtualGroup':
   if len(args) != 1:
-    print('insterVirtualGroup requires 1 args')
+    print('instertVirtualGroup requires 1 args')
     sys.exit(1)
-  pp.pprint(client.insterVirtualGroup(eval(args[0]),))
+  pp.pprint(client.instertVirtualGroup(eval(args[0]),))
 
 elif cmd == 'findVirtual':
   if len(args) != 5:
@@ -148,11 +148,11 @@ elif cmd == 'findGroup':
     sys.exit(1)
   pp.pprint(client.findGroup())
 
-elif cmd == 'insterGroup':
+elif cmd == 'instertGroup':
   if len(args) != 1:
-    print('insterGroup requires 1 args')
+    print('instertGroup requires 1 args')
     sys.exit(1)
-  pp.pprint(client.insterGroup(eval(args[0]),))
+  pp.pprint(client.instertGroup(eval(args[0]),))
 
 elif cmd == 'editGroup':
   if len(args) != 1:

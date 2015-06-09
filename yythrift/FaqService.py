@@ -64,18 +64,18 @@ class Iface:
     """
     pass
 
-  def findTheme(self, className, name, uid, page, cou):
+  def findTheme(self, className, ugroups, userName, page, cou):
     """
     主题列表<br>
     参数 包含 一下参数<br>
     className	String	分类名称<br>
-    name	String	主题名字<br>
-    uid	String	用户ID<br>
+    ugroups	list<string> 用户组ID<br>
+    userName	String	用户昵称<br>
 
     Parameters:
      - className
-     - name
-     - uid
+     - ugroups
+     - userName
      - page
      - cou
     """
@@ -448,30 +448,30 @@ class Client(Iface):
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "findThemeById failed: unknown result");
 
-  def findTheme(self, className, name, uid, page, cou):
+  def findTheme(self, className, ugroups, userName, page, cou):
     """
     主题列表<br>
     参数 包含 一下参数<br>
     className	String	分类名称<br>
-    name	String	主题名字<br>
-    uid	String	用户ID<br>
+    ugroups	list<string> 用户组ID<br>
+    userName	String	用户昵称<br>
 
     Parameters:
      - className
-     - name
-     - uid
+     - ugroups
+     - userName
      - page
      - cou
     """
-    self.send_findTheme(className, name, uid, page, cou)
+    self.send_findTheme(className, ugroups, userName, page, cou)
     return self.recv_findTheme()
 
-  def send_findTheme(self, className, name, uid, page, cou):
+  def send_findTheme(self, className, ugroups, userName, page, cou):
     self._oprot.writeMessageBegin('findTheme', TMessageType.CALL, self._seqid)
     args = findTheme_args()
     args.className = className
-    args.name = name
-    args.uid = uid
+    args.ugroups = ugroups
+    args.userName = userName
     args.page = page
     args.cou = cou
     args.write(self._oprot)
@@ -1130,7 +1130,7 @@ class Processor(Iface, TProcessor):
     args.read(iprot)
     iprot.readMessageEnd()
     result = findTheme_result()
-    result.success = self._handler.findTheme(args.className, args.name, args.uid, args.page, args.cou)
+    result.success = self._handler.findTheme(args.className, args.ugroups, args.userName, args.page, args.cou)
     oprot.writeMessageBegin("findTheme", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -1308,11 +1308,11 @@ class addThemeClass_args:
       if fid == 1:
         if ftype == TType.LIST:
           self.tgroups = []
-          (_etype38, _size35) = iprot.readListBegin()
-          for _i39 in xrange(_size35):
-            _elem40 = GroupList()
-            _elem40.read(iprot)
-            self.tgroups.append(_elem40)
+          (_etype52, _size49) = iprot.readListBegin()
+          for _i53 in xrange(_size49):
+            _elem54 = GroupList()
+            _elem54.read(iprot)
+            self.tgroups.append(_elem54)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1329,8 +1329,8 @@ class addThemeClass_args:
     if self.tgroups is not None:
       oprot.writeFieldBegin('tgroups', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.tgroups))
-      for iter41 in self.tgroups:
-        iter41.write(oprot)
+      for iter55 in self.tgroups:
+        iter55.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1363,7 +1363,7 @@ class addThemeClass_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1379,8 +1379,8 @@ class addThemeClass_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1394,8 +1394,8 @@ class addThemeClass_result:
       return
     oprot.writeStructBegin('addThemeClass_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1491,11 +1491,11 @@ class findThemeClass_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype45, _size42) = iprot.readListBegin()
-          for _i46 in xrange(_size42):
-            _elem47 = GroupList()
-            _elem47.read(iprot)
-            self.success.append(_elem47)
+          (_etype59, _size56) = iprot.readListBegin()
+          for _i60 in xrange(_size56):
+            _elem61 = GroupList()
+            _elem61.read(iprot)
+            self.success.append(_elem61)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1512,8 +1512,8 @@ class findThemeClass_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter48 in self.success:
-        iter48.write(oprot)
+      for iter62 in self.success:
+        iter62.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1612,7 +1612,7 @@ class addTheme_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1628,8 +1628,8 @@ class addTheme_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1643,8 +1643,8 @@ class addTheme_result:
       return
     oprot.writeStructBegin('addTheme_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1742,7 +1742,7 @@ class updateTheme_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1758,8 +1758,8 @@ class updateTheme_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1773,8 +1773,8 @@ class updateTheme_result:
       return
     oprot.writeStructBegin('updateTheme_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1933,8 +1933,8 @@ class findTheme_args:
   """
   Attributes:
    - className
-   - name
-   - uid
+   - ugroups
+   - userName
    - page
    - cou
   """
@@ -1942,16 +1942,16 @@ class findTheme_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'className', None, None, ), # 1
-    (2, TType.STRING, 'name', None, None, ), # 2
-    (3, TType.STRING, 'uid', None, None, ), # 3
+    (2, TType.LIST, 'ugroups', (TType.STRING,None), None, ), # 2
+    (3, TType.STRING, 'userName', None, None, ), # 3
     (4, TType.I32, 'page', None, None, ), # 4
     (5, TType.I32, 'cou', None, None, ), # 5
   )
 
-  def __init__(self, className=None, name=None, uid=None, page=None, cou=None,):
+  def __init__(self, className=None, ugroups=None, userName=None, page=None, cou=None,):
     self.className = className
-    self.name = name
-    self.uid = uid
+    self.ugroups = ugroups
+    self.userName = userName
     self.page = page
     self.cou = cou
 
@@ -1970,13 +1970,18 @@ class findTheme_args:
         else:
           iprot.skip(ftype)
       elif fid == 2:
-        if ftype == TType.STRING:
-          self.name = iprot.readString();
+        if ftype == TType.LIST:
+          self.ugroups = []
+          (_etype66, _size63) = iprot.readListBegin()
+          for _i67 in xrange(_size63):
+            _elem68 = iprot.readString();
+            self.ugroups.append(_elem68)
+          iprot.readListEnd()
         else:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.uid = iprot.readString();
+          self.userName = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -2003,13 +2008,16 @@ class findTheme_args:
       oprot.writeFieldBegin('className', TType.STRING, 1)
       oprot.writeString(self.className)
       oprot.writeFieldEnd()
-    if self.name is not None:
-      oprot.writeFieldBegin('name', TType.STRING, 2)
-      oprot.writeString(self.name)
+    if self.ugroups is not None:
+      oprot.writeFieldBegin('ugroups', TType.LIST, 2)
+      oprot.writeListBegin(TType.STRING, len(self.ugroups))
+      for iter69 in self.ugroups:
+        oprot.writeString(iter69)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
-    if self.uid is not None:
-      oprot.writeFieldBegin('uid', TType.STRING, 3)
-      oprot.writeString(self.uid)
+    if self.userName is not None:
+      oprot.writeFieldBegin('userName', TType.STRING, 3)
+      oprot.writeString(self.userName)
       oprot.writeFieldEnd()
     if self.page is not None:
       oprot.writeFieldBegin('page', TType.I32, 4)
@@ -2029,8 +2037,8 @@ class findTheme_args:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.className)
-    value = (value * 31) ^ hash(self.name)
-    value = (value * 31) ^ hash(self.uid)
+    value = (value * 31) ^ hash(self.ugroups)
+    value = (value * 31) ^ hash(self.userName)
     value = (value * 31) ^ hash(self.page)
     value = (value * 31) ^ hash(self.cou)
     return value
@@ -2071,11 +2079,11 @@ class findTheme_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype52, _size49) = iprot.readListBegin()
-          for _i53 in xrange(_size49):
-            _elem54 = Theme()
-            _elem54.read(iprot)
-            self.success.append(_elem54)
+          (_etype73, _size70) = iprot.readListBegin()
+          for _i74 in xrange(_size70):
+            _elem75 = Theme()
+            _elem75.read(iprot)
+            self.success.append(_elem75)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2092,8 +2100,8 @@ class findTheme_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter55 in self.success:
-        iter55.write(oprot)
+      for iter76 in self.success:
+        iter76.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2204,7 +2212,7 @@ class hideTheme_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2220,8 +2228,8 @@ class hideTheme_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2235,8 +2243,8 @@ class hideTheme_result:
       return
     oprot.writeStructBegin('hideTheme_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2334,7 +2342,7 @@ class addQuestion_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2350,8 +2358,8 @@ class addQuestion_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2365,8 +2373,8 @@ class addQuestion_result:
       return
     oprot.writeStructBegin('addQuestion_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2464,7 +2472,7 @@ class editQuestion_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2480,8 +2488,8 @@ class editQuestion_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2495,8 +2503,8 @@ class editQuestion_result:
       return
     oprot.writeStructBegin('editQuestion_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2936,11 +2944,11 @@ class findQuestion_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype59, _size56) = iprot.readListBegin()
-          for _i60 in xrange(_size56):
-            _elem61 = Question()
-            _elem61.read(iprot)
-            self.success.append(_elem61)
+          (_etype80, _size77) = iprot.readListBegin()
+          for _i81 in xrange(_size77):
+            _elem82 = Question()
+            _elem82.read(iprot)
+            self.success.append(_elem82)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2957,8 +2965,8 @@ class findQuestion_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter62 in self.success:
-        iter62.write(oprot)
+      for iter83 in self.success:
+        iter83.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3057,7 +3065,7 @@ class addAnswer_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3073,8 +3081,8 @@ class addAnswer_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3088,8 +3096,8 @@ class addAnswer_result:
       return
     oprot.writeStructBegin('addAnswer_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3187,7 +3195,7 @@ class editAnswer_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3203,8 +3211,8 @@ class editAnswer_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3218,8 +3226,8 @@ class editAnswer_result:
       return
     oprot.writeStructBegin('editAnswer_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3425,11 +3433,11 @@ class findAnswer_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype66, _size63) = iprot.readListBegin()
-          for _i67 in xrange(_size63):
-            _elem68 = Answer()
-            _elem68.read(iprot)
-            self.success.append(_elem68)
+          (_etype87, _size84) = iprot.readListBegin()
+          for _i88 in xrange(_size84):
+            _elem89 = Answer()
+            _elem89.read(iprot)
+            self.success.append(_elem89)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3446,8 +3454,8 @@ class findAnswer_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter69 in self.success:
-        iter69.write(oprot)
+      for iter90 in self.success:
+        iter90.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3558,7 +3566,7 @@ class hideAnswer_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3574,8 +3582,8 @@ class hideAnswer_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3589,8 +3597,8 @@ class hideAnswer_result:
       return
     oprot.writeStructBegin('hideAnswer_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3830,7 +3838,7 @@ class hideQuestion_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3846,8 +3854,8 @@ class hideQuestion_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3861,8 +3869,8 @@ class hideQuestion_result:
       return
     oprot.writeStructBegin('hideQuestion_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3960,7 +3968,7 @@ class editTheme_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3976,8 +3984,8 @@ class editTheme_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3991,8 +3999,8 @@ class editTheme_result:
       return
     oprot.writeStructBegin('editTheme_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -4129,11 +4137,11 @@ class findAnsQues_args:
       elif fid == 11:
         if ftype == TType.LIST:
           self.ugroup = []
-          (_etype73, _size70) = iprot.readListBegin()
-          for _i74 in xrange(_size70):
-            _elem75 = GroupList()
-            _elem75.read(iprot)
-            self.ugroup.append(_elem75)
+          (_etype94, _size91) = iprot.readListBegin()
+          for _i95 in xrange(_size91):
+            _elem96 = GroupList()
+            _elem96.read(iprot)
+            self.ugroup.append(_elem96)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4200,8 +4208,8 @@ class findAnsQues_args:
     if self.ugroup is not None:
       oprot.writeFieldBegin('ugroup', TType.LIST, 11)
       oprot.writeListBegin(TType.STRUCT, len(self.ugroup))
-      for iter76 in self.ugroup:
-        iter76.write(oprot)
+      for iter97 in self.ugroup:
+        iter97.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.start is not None:
@@ -4272,11 +4280,11 @@ class findAnsQues_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype80, _size77) = iprot.readListBegin()
-          for _i81 in xrange(_size77):
-            _elem82 = Question()
-            _elem82.read(iprot)
-            self.success.append(_elem82)
+          (_etype101, _size98) = iprot.readListBegin()
+          for _i102 in xrange(_size98):
+            _elem103 = Question()
+            _elem103.read(iprot)
+            self.success.append(_elem103)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -4293,8 +4301,8 @@ class findAnsQues_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter83 in self.success:
-        iter83.write(oprot)
+      for iter104 in self.success:
+        iter104.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()

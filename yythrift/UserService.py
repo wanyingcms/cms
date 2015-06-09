@@ -19,13 +19,13 @@ class Iface:
     """
     pass
 
-  def insterVirtualGroup(self, glist):
+  def instertVirtualGroup(self, groups):
     """
     添加虚拟用户分类<br>
     name : 分类名称
 
     Parameters:
-     - glist
+     - groups
     """
     pass
 
@@ -99,13 +99,13 @@ class Iface:
     """
     pass
 
-  def insterGroup(self, group):
+  def instertGroup(self, groups):
     """
     添加真实用户分组<br>
     name : 分组名称<br>
 
     Parameters:
-     - group
+     - groups
     """
     pass
 
@@ -195,26 +195,26 @@ class Client(Iface):
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "findVirtualGroup failed: unknown result");
 
-  def insterVirtualGroup(self, glist):
+  def instertVirtualGroup(self, groups):
     """
     添加虚拟用户分类<br>
     name : 分类名称
 
     Parameters:
-     - glist
+     - groups
     """
-    self.send_insterVirtualGroup(glist)
-    return self.recv_insterVirtualGroup()
+    self.send_instertVirtualGroup(groups)
+    return self.recv_instertVirtualGroup()
 
-  def send_insterVirtualGroup(self, glist):
-    self._oprot.writeMessageBegin('insterVirtualGroup', TMessageType.CALL, self._seqid)
-    args = insterVirtualGroup_args()
-    args.glist = glist
+  def send_instertVirtualGroup(self, groups):
+    self._oprot.writeMessageBegin('instertVirtualGroup', TMessageType.CALL, self._seqid)
+    args = instertVirtualGroup_args()
+    args.groups = groups
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_insterVirtualGroup(self):
+  def recv_instertVirtualGroup(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -222,12 +222,12 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = insterVirtualGroup_result()
+    result = instertVirtualGroup_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
       return result.success
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "insterVirtualGroup failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "instertVirtualGroup failed: unknown result");
 
   def findVirtual(self, groupid, name, remark, start, count):
     """
@@ -472,26 +472,26 @@ class Client(Iface):
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "findGroup failed: unknown result");
 
-  def insterGroup(self, group):
+  def instertGroup(self, groups):
     """
     添加真实用户分组<br>
     name : 分组名称<br>
 
     Parameters:
-     - group
+     - groups
     """
-    self.send_insterGroup(group)
-    return self.recv_insterGroup()
+    self.send_instertGroup(groups)
+    return self.recv_instertGroup()
 
-  def send_insterGroup(self, group):
-    self._oprot.writeMessageBegin('insterGroup', TMessageType.CALL, self._seqid)
-    args = insterGroup_args()
-    args.group = group
+  def send_instertGroup(self, groups):
+    self._oprot.writeMessageBegin('instertGroup', TMessageType.CALL, self._seqid)
+    args = instertGroup_args()
+    args.groups = groups
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
 
-  def recv_insterGroup(self):
+  def recv_instertGroup(self):
     iprot = self._iprot
     (fname, mtype, rseqid) = iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
@@ -499,12 +499,12 @@ class Client(Iface):
       x.read(iprot)
       iprot.readMessageEnd()
       raise x
-    result = insterGroup_result()
+    result = instertGroup_result()
     result.read(iprot)
     iprot.readMessageEnd()
     if result.success is not None:
       return result.success
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "insterGroup failed: unknown result");
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "instertGroup failed: unknown result");
 
   def editGroup(self, groupList):
     """
@@ -664,7 +664,7 @@ class Processor(Iface, TProcessor):
     self._handler = handler
     self._processMap = {}
     self._processMap["findVirtualGroup"] = Processor.process_findVirtualGroup
-    self._processMap["insterVirtualGroup"] = Processor.process_insterVirtualGroup
+    self._processMap["instertVirtualGroup"] = Processor.process_instertVirtualGroup
     self._processMap["findVirtual"] = Processor.process_findVirtual
     self._processMap["insertVirtual"] = Processor.process_insertVirtual
     self._processMap["insertOrEditVirtual"] = Processor.process_insertOrEditVirtual
@@ -672,7 +672,7 @@ class Processor(Iface, TProcessor):
     self._processMap["hideVirtual"] = Processor.process_hideVirtual
     self._processMap["stopVirtual"] = Processor.process_stopVirtual
     self._processMap["findGroup"] = Processor.process_findGroup
-    self._processMap["insterGroup"] = Processor.process_insterGroup
+    self._processMap["instertGroup"] = Processor.process_instertGroup
     self._processMap["editGroup"] = Processor.process_editGroup
     self._processMap["findUser"] = Processor.process_findUser
     self._processMap["setGroup"] = Processor.process_setGroup
@@ -704,13 +704,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_insterVirtualGroup(self, seqid, iprot, oprot):
-    args = insterVirtualGroup_args()
+  def process_instertVirtualGroup(self, seqid, iprot, oprot):
+    args = instertVirtualGroup_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = insterVirtualGroup_result()
-    result.success = self._handler.insterVirtualGroup(args.glist)
-    oprot.writeMessageBegin("insterVirtualGroup", TMessageType.REPLY, seqid)
+    result = instertVirtualGroup_result()
+    result.success = self._handler.instertVirtualGroup(args.groups)
+    oprot.writeMessageBegin("instertVirtualGroup", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -792,13 +792,13 @@ class Processor(Iface, TProcessor):
     oprot.writeMessageEnd()
     oprot.trans.flush()
 
-  def process_insterGroup(self, seqid, iprot, oprot):
-    args = insterGroup_args()
+  def process_instertGroup(self, seqid, iprot, oprot):
+    args = instertGroup_args()
     args.read(iprot)
     iprot.readMessageEnd()
-    result = insterGroup_result()
-    result.success = self._handler.insterGroup(args.group)
-    oprot.writeMessageBegin("insterGroup", TMessageType.REPLY, seqid)
+    result = instertGroup_result()
+    result.success = self._handler.instertGroup(args.groups)
+    oprot.writeMessageBegin("instertGroup", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -969,19 +969,19 @@ class findVirtualGroup_result:
   def __ne__(self, other):
     return not (self == other)
 
-class insterVirtualGroup_args:
+class instertVirtualGroup_args:
   """
   Attributes:
-   - glist
+   - groups
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'glist', (GroupList, GroupList.thrift_spec), None, ), # 1
+    (1, TType.LIST, 'groups', (TType.STRUCT,(GroupList, GroupList.thrift_spec)), None, ), # 1
   )
 
-  def __init__(self, glist=None,):
-    self.glist = glist
+  def __init__(self, groups=None,):
+    self.groups = groups
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -993,9 +993,14 @@ class insterVirtualGroup_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRUCT:
-          self.glist = GroupList()
-          self.glist.read(iprot)
+        if ftype == TType.LIST:
+          self.groups = []
+          (_etype10, _size7) = iprot.readListBegin()
+          for _i11 in xrange(_size7):
+            _elem12 = GroupList()
+            _elem12.read(iprot)
+            self.groups.append(_elem12)
+          iprot.readListEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -1007,10 +1012,13 @@ class insterVirtualGroup_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('insterVirtualGroup_args')
-    if self.glist is not None:
-      oprot.writeFieldBegin('glist', TType.STRUCT, 1)
-      self.glist.write(oprot)
+    oprot.writeStructBegin('instertVirtualGroup_args')
+    if self.groups is not None:
+      oprot.writeFieldBegin('groups', TType.LIST, 1)
+      oprot.writeListBegin(TType.STRUCT, len(self.groups))
+      for iter13 in self.groups:
+        iter13.write(oprot)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1021,7 +1029,7 @@ class insterVirtualGroup_args:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.glist)
+    value = (value * 31) ^ hash(self.groups)
     return value
 
   def __repr__(self):
@@ -1035,14 +1043,14 @@ class insterVirtualGroup_args:
   def __ne__(self, other):
     return not (self == other)
 
-class insterVirtualGroup_result:
+class instertVirtualGroup_result:
   """
   Attributes:
    - success
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1058,8 +1066,8 @@ class insterVirtualGroup_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1071,10 +1079,10 @@ class insterVirtualGroup_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('insterVirtualGroup_result')
+    oprot.writeStructBegin('instertVirtualGroup_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1241,11 +1249,11 @@ class findVirtual_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype10, _size7) = iprot.readListBegin()
-          for _i11 in xrange(_size7):
-            _elem12 = User()
-            _elem12.read(iprot)
-            self.success.append(_elem12)
+          (_etype17, _size14) = iprot.readListBegin()
+          for _i18 in xrange(_size14):
+            _elem19 = User()
+            _elem19.read(iprot)
+            self.success.append(_elem19)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1262,8 +1270,8 @@ class findVirtual_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter13 in self.success:
-        iter13.write(oprot)
+      for iter20 in self.success:
+        iter20.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1362,7 +1370,7 @@ class insertVirtual_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1378,8 +1386,8 @@ class insertVirtual_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1393,8 +1401,8 @@ class insertVirtual_result:
       return
     oprot.writeStructBegin('insertVirtual_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1492,7 +1500,7 @@ class insertOrEditVirtual_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1508,8 +1516,8 @@ class insertOrEditVirtual_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1523,8 +1531,8 @@ class insertOrEditVirtual_result:
       return
     oprot.writeStructBegin('insertOrEditVirtual_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1621,7 +1629,7 @@ class findUserById_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1637,8 +1645,8 @@ class findUserById_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1652,8 +1660,8 @@ class findUserById_result:
       return
     oprot.writeStructBegin('findUserById_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1763,7 +1771,7 @@ class hideVirtual_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1779,8 +1787,8 @@ class hideVirtual_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1794,8 +1802,8 @@ class hideVirtual_result:
       return
     oprot.writeStructBegin('hideVirtual_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1905,7 +1913,7 @@ class stopVirtual_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1921,8 +1929,8 @@ class stopVirtual_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1936,8 +1944,8 @@ class stopVirtual_result:
       return
     oprot.writeStructBegin('stopVirtual_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2033,11 +2041,11 @@ class findGroup_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype17, _size14) = iprot.readListBegin()
-          for _i18 in xrange(_size14):
-            _elem19 = GroupList()
-            _elem19.read(iprot)
-            self.success.append(_elem19)
+          (_etype24, _size21) = iprot.readListBegin()
+          for _i25 in xrange(_size21):
+            _elem26 = GroupList()
+            _elem26.read(iprot)
+            self.success.append(_elem26)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2054,8 +2062,8 @@ class findGroup_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter20 in self.success:
-        iter20.write(oprot)
+      for iter27 in self.success:
+        iter27.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2081,19 +2089,19 @@ class findGroup_result:
   def __ne__(self, other):
     return not (self == other)
 
-class insterGroup_args:
+class instertGroup_args:
   """
   Attributes:
-   - group
+   - groups
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'group', (GroupList, GroupList.thrift_spec), None, ), # 1
+    (1, TType.LIST, 'groups', (TType.STRUCT,(GroupList, GroupList.thrift_spec)), None, ), # 1
   )
 
-  def __init__(self, group=None,):
-    self.group = group
+  def __init__(self, groups=None,):
+    self.groups = groups
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2105,9 +2113,14 @@ class insterGroup_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
-        if ftype == TType.STRUCT:
-          self.group = GroupList()
-          self.group.read(iprot)
+        if ftype == TType.LIST:
+          self.groups = []
+          (_etype31, _size28) = iprot.readListBegin()
+          for _i32 in xrange(_size28):
+            _elem33 = GroupList()
+            _elem33.read(iprot)
+            self.groups.append(_elem33)
+          iprot.readListEnd()
         else:
           iprot.skip(ftype)
       else:
@@ -2119,10 +2132,13 @@ class insterGroup_args:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('insterGroup_args')
-    if self.group is not None:
-      oprot.writeFieldBegin('group', TType.STRUCT, 1)
-      self.group.write(oprot)
+    oprot.writeStructBegin('instertGroup_args')
+    if self.groups is not None:
+      oprot.writeFieldBegin('groups', TType.LIST, 1)
+      oprot.writeListBegin(TType.STRUCT, len(self.groups))
+      for iter34 in self.groups:
+        iter34.write(oprot)
+      oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2133,7 +2149,7 @@ class insterGroup_args:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.group)
+    value = (value * 31) ^ hash(self.groups)
     return value
 
   def __repr__(self):
@@ -2147,14 +2163,14 @@ class insterGroup_args:
   def __ne__(self, other):
     return not (self == other)
 
-class insterGroup_result:
+class instertGroup_result:
   """
   Attributes:
    - success
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2170,8 +2186,8 @@ class insterGroup_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2183,10 +2199,10 @@ class insterGroup_result:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('insterGroup_result')
+    oprot.writeStructBegin('instertGroup_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2237,11 +2253,11 @@ class editGroup_args:
       if fid == 1:
         if ftype == TType.LIST:
           self.groupList = []
-          (_etype24, _size21) = iprot.readListBegin()
-          for _i25 in xrange(_size21):
-            _elem26 = GroupList()
-            _elem26.read(iprot)
-            self.groupList.append(_elem26)
+          (_etype38, _size35) = iprot.readListBegin()
+          for _i39 in xrange(_size35):
+            _elem40 = GroupList()
+            _elem40.read(iprot)
+            self.groupList.append(_elem40)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2258,8 +2274,8 @@ class editGroup_args:
     if self.groupList is not None:
       oprot.writeFieldBegin('groupList', TType.LIST, 1)
       oprot.writeListBegin(TType.STRUCT, len(self.groupList))
-      for iter27 in self.groupList:
-        iter27.write(oprot)
+      for iter41 in self.groupList:
+        iter41.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2292,7 +2308,7 @@ class editGroup_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2308,8 +2324,8 @@ class editGroup_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2323,8 +2339,8 @@ class editGroup_result:
       return
     oprot.writeStructBegin('editGroup_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2517,11 +2533,11 @@ class findUser_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype31, _size28) = iprot.readListBegin()
-          for _i32 in xrange(_size28):
-            _elem33 = User()
-            _elem33.read(iprot)
-            self.success.append(_elem33)
+          (_etype45, _size42) = iprot.readListBegin()
+          for _i46 in xrange(_size42):
+            _elem47 = User()
+            _elem47.read(iprot)
+            self.success.append(_elem47)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2538,8 +2554,8 @@ class findUser_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter34 in self.success:
-        iter34.write(oprot)
+      for iter48 in self.success:
+        iter48.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2650,7 +2666,7 @@ class setGroup_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2666,8 +2682,8 @@ class setGroup_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2681,8 +2697,8 @@ class setGroup_result:
       return
     oprot.writeStructBegin('setGroup_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2792,7 +2808,7 @@ class stopUser_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2808,8 +2824,8 @@ class stopUser_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2823,8 +2839,8 @@ class stopUser_result:
       return
     oprot.writeStructBegin('stopUser_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

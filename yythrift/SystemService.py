@@ -1143,10 +1143,10 @@ class findSensitive_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype94, _size91) = iprot.readListBegin()
-          for _i95 in xrange(_size91):
-            _elem96 = iprot.readString();
-            self.success.append(_elem96)
+          (_etype115, _size112) = iprot.readListBegin()
+          for _i116 in xrange(_size112):
+            _elem117 = iprot.readString();
+            self.success.append(_elem117)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1163,8 +1163,8 @@ class findSensitive_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter97 in self.success:
-        oprot.writeString(iter97)
+      for iter118 in self.success:
+        oprot.writeString(iter118)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1216,10 +1216,10 @@ class addSensitive_args:
       if fid == 1:
         if ftype == TType.LIST:
           self.words = []
-          (_etype101, _size98) = iprot.readListBegin()
-          for _i102 in xrange(_size98):
-            _elem103 = iprot.readString();
-            self.words.append(_elem103)
+          (_etype122, _size119) = iprot.readListBegin()
+          for _i123 in xrange(_size119):
+            _elem124 = iprot.readString();
+            self.words.append(_elem124)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1236,8 +1236,8 @@ class addSensitive_args:
     if self.words is not None:
       oprot.writeFieldBegin('words', TType.LIST, 1)
       oprot.writeListBegin(TType.STRING, len(self.words))
-      for iter104 in self.words:
-        oprot.writeString(iter104)
+      for iter125 in self.words:
+        oprot.writeString(iter125)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1270,7 +1270,7 @@ class addSensitive_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1286,8 +1286,8 @@ class addSensitive_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1301,8 +1301,8 @@ class addSensitive_result:
       return
     oprot.writeStructBegin('addSensitive_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1353,10 +1353,10 @@ class delSensitive_args:
       if fid == 1:
         if ftype == TType.LIST:
           self.words = []
-          (_etype108, _size105) = iprot.readListBegin()
-          for _i109 in xrange(_size105):
-            _elem110 = iprot.readString();
-            self.words.append(_elem110)
+          (_etype129, _size126) = iprot.readListBegin()
+          for _i130 in xrange(_size126):
+            _elem131 = iprot.readString();
+            self.words.append(_elem131)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -1373,8 +1373,8 @@ class delSensitive_args:
     if self.words is not None:
       oprot.writeFieldBegin('words', TType.LIST, 1)
       oprot.writeListBegin(TType.STRING, len(self.words))
-      for iter111 in self.words:
-        oprot.writeString(iter111)
+      for iter132 in self.words:
+        oprot.writeString(iter132)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -1407,7 +1407,7 @@ class delSensitive_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1423,8 +1423,8 @@ class delSensitive_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1438,8 +1438,8 @@ class delSensitive_result:
       return
     oprot.writeStructBegin('delSensitive_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1549,7 +1549,7 @@ class updateAbout_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1565,8 +1565,8 @@ class updateAbout_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1580,8 +1580,8 @@ class updateAbout_result:
       return
     oprot.writeStructBegin('updateAbout_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -1917,7 +1917,7 @@ class udpateService_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -1933,8 +1933,8 @@ class udpateService_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -1948,8 +1948,8 @@ class udpateService_result:
       return
     oprot.writeStructBegin('udpateService_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2047,7 +2047,7 @@ class publishNewAppVersion_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2063,8 +2063,8 @@ class publishNewAppVersion_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2078,8 +2078,8 @@ class publishNewAppVersion_result:
       return
     oprot.writeStructBegin('publishNewAppVersion_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2298,11 +2298,11 @@ class findHistoryVersions_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype115, _size112) = iprot.readListBegin()
-          for _i116 in xrange(_size112):
-            _elem117 = Version()
-            _elem117.read(iprot)
-            self.success.append(_elem117)
+          (_etype136, _size133) = iprot.readListBegin()
+          for _i137 in xrange(_size133):
+            _elem138 = Version()
+            _elem138.read(iprot)
+            self.success.append(_elem138)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2319,8 +2319,8 @@ class findHistoryVersions_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter118 in self.success:
-        iter118.write(oprot)
+      for iter139 in self.success:
+        iter139.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2419,7 +2419,7 @@ class udpateAppversion_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2435,8 +2435,8 @@ class udpateAppversion_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2450,8 +2450,8 @@ class udpateAppversion_result:
       return
     oprot.writeStructBegin('udpateAppversion_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2618,11 +2618,11 @@ class findAllSysMesg_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype122, _size119) = iprot.readListBegin()
-          for _i123 in xrange(_size119):
-            _elem124 = SysMesg()
-            _elem124.read(iprot)
-            self.success.append(_elem124)
+          (_etype143, _size140) = iprot.readListBegin()
+          for _i144 in xrange(_size140):
+            _elem145 = SysMesg()
+            _elem145.read(iprot)
+            self.success.append(_elem145)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -2639,8 +2639,8 @@ class findAllSysMesg_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter125 in self.success:
-        iter125.write(oprot)
+      for iter146 in self.success:
+        iter146.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -2777,7 +2777,7 @@ class addEditSysMesg_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -2793,8 +2793,8 @@ class addEditSysMesg_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -2808,8 +2808,8 @@ class addEditSysMesg_result:
       return
     oprot.writeStructBegin('addEditSysMesg_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3002,11 +3002,11 @@ class findAdvice_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype129, _size126) = iprot.readListBegin()
-          for _i130 in xrange(_size126):
-            _elem131 = Advice()
-            _elem131.read(iprot)
-            self.success.append(_elem131)
+          (_etype150, _size147) = iprot.readListBegin()
+          for _i151 in xrange(_size147):
+            _elem152 = Advice()
+            _elem152.read(iprot)
+            self.success.append(_elem152)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3023,8 +3023,8 @@ class findAdvice_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter132 in self.success:
-        iter132.write(oprot)
+      for iter153 in self.success:
+        iter153.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -3135,7 +3135,7 @@ class holdReport_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3151,8 +3151,8 @@ class holdReport_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3166,8 +3166,8 @@ class holdReport_result:
       return
     oprot.writeStructBegin('holdReport_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3290,7 +3290,7 @@ class hideQuesOrAns_result:
   """
 
   thrift_spec = (
-    (0, TType.BOOL, 'success', None, None, ), # 0
+    (0, TType.STRING, 'success', None, None, ), # 0
   )
 
   def __init__(self, success=None,):
@@ -3306,8 +3306,8 @@ class hideQuesOrAns_result:
       if ftype == TType.STOP:
         break
       if fid == 0:
-        if ftype == TType.BOOL:
-          self.success = iprot.readBool();
+        if ftype == TType.STRING:
+          self.success = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -3321,8 +3321,8 @@ class hideQuesOrAns_result:
       return
     oprot.writeStructBegin('hideQuesOrAns_result')
     if self.success is not None:
-      oprot.writeFieldBegin('success', TType.BOOL, 0)
-      oprot.writeBool(self.success)
+      oprot.writeFieldBegin('success', TType.STRING, 0)
+      oprot.writeString(self.success)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -3580,11 +3580,11 @@ class findReports_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype136, _size133) = iprot.readListBegin()
-          for _i137 in xrange(_size133):
-            _elem138 = Report()
-            _elem138.read(iprot)
-            self.success.append(_elem138)
+          (_etype157, _size154) = iprot.readListBegin()
+          for _i158 in xrange(_size154):
+            _elem159 = Report()
+            _elem159.read(iprot)
+            self.success.append(_elem159)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -3601,8 +3601,8 @@ class findReports_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter139 in self.success:
-        iter139.write(oprot)
+      for iter160 in self.success:
+        iter160.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
