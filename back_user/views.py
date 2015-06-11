@@ -1,11 +1,14 @@
 #coding:utf-8
+import os
+
 from django.shortcuts import render
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django import forms
+
 from utils.dbutils import menuList
-import os
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cms.settings")
 from back_user.models import *
 from utils.redisUtil import *
@@ -149,21 +152,27 @@ def showUsersToJson(request):
 
     startStr = request.GET['start']
     limitStr = request.GET['limit']
-    show = request.GET['show']
-    print 'sss' in request.GET
-    if show == 'init':
-        total = BackuserUserinfo.objects.count()
-        userdata = BackuserUserinfo.objects.all()[int(startStr):int(limitStr)+int(startStr)]
-        pass
-    else:
-        pass
 
+    userdata = BackuserUserinfo.objects
+    if 'username' in request.GET:
+        userdata = userdata.filter(username__contains=request.GET['username'])
+
+    if 'comments' in request.GET:
+        userdata = userdata.filter(comments__contains=request.GET['comments'])
+
+    #没有条件就全查
+    if 'username' not in request.GET and 'comments' not in request.GET:
+        userdata = userdata.all()[int(startStr):int(limitStr)+int(startStr)]
+        total = BackuserUserinfo.objects.count()
+    else:
+        userdata = userdata[int(startStr):int(limitStr)+int(startStr)]
+        total = userdata.count()
 
     rows = []
     for user in userdata:
         rows.append({"id": user.id, "username": user.username, "comments": user.comments, "logins": user.logins,
                      "answers": user.answers, "questions": user.questions, "lastlogintime": user.lastlogintime.strftime('%Y-%m-%d %H:%M:%S'),
-                     "createtime": user.createtime.strftime('%Y-%m-%d %H:%M:%S'), "createid": user.comments, "userstatus": user.comments, })
+                     "createtime": user.createtime.strftime('%Y-%m-%d %H:%M:%S'), "createid": user.username, "userstatus": user.userstatus, })
 
     response_data = {'total': total, 'rows': rows, }
 
@@ -212,6 +221,13 @@ def initEditUser(request):
 #增加用户
 def addUser(request):
     username = request.POST['username']
+
+    #查询用户名是否存在
+    user = BackuserUserinfo.objects.filter(username=username)
+    if user.count() > 0:
+        result = {"message": "用户名已经存在" , "status": "101"}
+        return HttpResponse(json.dumps(result), content_type="application/json")
+
     id = str(uuid.uuid5(uuid.NAMESPACE_DNS, str(username))).replace('-', '')
     comments = request.POST['comments']
     userpwd = request.POST['userpwd']
@@ -229,7 +245,9 @@ def addUser(request):
         mu = BackuserMenuuser(id=muid, userid=id, menuid=m)
         mu.save()
     buser.save()
-    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+
+    result = {"message": "保存成功" , "status": "200"}
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 #编辑用户
 def editUser(request):
@@ -251,7 +269,8 @@ def editUser(request):
         mu = BackuserMenuuser(id=muid, userid=uid, menuid=m)
         mu.save()
 
-    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+    result = {"message": "保存成功" , "status": "200"}
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 #删除用户
 def removeUser(request):
@@ -264,10 +283,16 @@ def removeUser(request):
 def modifyUserStatus(request):
     uid = request.GET['uid']
     ustatus= request.GET['ustatus']
+
+    print uid,ustatus
     buser = BackuserUserinfo.objects.get(id=uid)
     buser.userstatus = ustatus
     buser.save()
-    return render(request, 'management/showUsers.html', {'data': BackuserUserinfo.objects.all()})
+
+    result = {"message": "ok"}
+
+    print '444444444444444444444444'
+    return HttpResponse(json.dumps(result), content_type="application/json")
 
 #菜单管理
 def menuManager(request):

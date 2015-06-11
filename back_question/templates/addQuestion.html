@@ -9,7 +9,6 @@
 <body>
 <form id="saveThemeForm">
 <input type="hidden" name="themeId" value="0" />
-ID：AAAAA
 发布人：
 <select id="vUserGroup" name="vUserGroup">
     <option value="0">请选择虚拟用户组</option>
@@ -21,8 +20,11 @@ ID：AAAAA
     <option value="0">请选择虚拟用户</option>
 </select>
 <input type="button" id="randomBtn" value="随机" /><br />
+<select id="vGroup" name="vGroup">
+    <option value="0">请选择主题分类</option>
+</select>
 <select id="vUser" name="vUser">
-    <option value="0">全部主题</option>
+    <option value="0">请选择主题</option>
 </select>
 <input type="text" name="themeTitle" id="themeTitle" value="请输入您的问题" />
 <br />
@@ -50,9 +52,21 @@ ID：AAAAA
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-fileupload.js"></script>
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-calendar.js"></script>
 <script type="text/javascript">
+
     $(document).ready(function() {
         $('#container').omCalendar({showTime : true});
-    });
+
+        $('#file_upload').omFileUpload({
+            action : '/back_theme/saveTheme',
+            swf : '/static/operamasks-ui-2.0/swf/om-fileupload.swf',
+            method   : 'POST',
+            onComplete : function(ID,fileObj,response,data,event){
+                var jsonData = eval("("+response+")");
+                alert(jsonData.message);
+                window.location.href="/back_theme/themeIndex";
+            }
+          });
+	});
 
     //切换虚拟用户组级联虚拟用户
     $("#vUserGroup").change(function (){
@@ -99,8 +113,6 @@ ID：AAAAA
     		msg += '文件创建时间：' + praseDate(fileObj.creationDate) + '\n';
     		msg += '文件最后修改时间：' + praseDate(fileObj.modificationDate) + '\n';
     		msg += '文件类型：' + fileObj.type + '\n';
-    		$('#response').append('<img src="'+fileObj.name+'" />')
-	    				  .append('<hr />');
 	    }
     });
 

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>后台菜单管理</title>
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
+</head>
+
+<body>
+<input type="button" value="添加" id="addBtn" />
+<table id="grid"></table>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-mouse.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-resizable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-draggable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-position.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-dialog.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        url = "showMenusToJson?method=fast";
+        showUsers(url);
+    });
+
+    $("#addBtn").click(function(){
+        window.location.href="/back_user/initAddMenu";
+    });
+
+    function showUsers(url){
+        $('#grid').omGrid({
+                limit : 20,
+                dataSource : url,
+                colModel : [ {header : 'ID', name : 'id', width : 220, align : 'center'},
+                             {header : '菜单名称', name : 'title', width : 100, align : 'center'},
+                    {header : 'URL', name : 'url', align : 'center', width : 'autoExpand'},
+                    {header : '父级菜单', name : 'ptitle', align : 'center', width : 100},
+                    {header : '操作', name : 'id', align : 'center', width : 100,
+                        renderer:function(colValue, rowData, rowIndex){
+                            return '<a href="javascript:;" onclick="modifyMenu(\''+colValue+'\')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="removeMenu(\''+colValue+'\')">删除</a>&nbsp;&nbsp;';
+                        }} ]
+
+            });
+    }
+
+    function modifyMenu(id){
+        window.location.href = '/back_user/initEditMenu?mid='+id;
+    }
+    function removeMenu(id){
+        if(confirm("确认删除？")){
+            $.ajax({
+                url:"/back_user/removeMenu",
+                data:"mid="+id,
+                success:function(result){
+                    alert(result.message);
+                    url = "showMenusToJson?method=fast";
+                    showUsers(url);
+                }
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

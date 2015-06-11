@@ -7,9 +7,38 @@
     <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
 </head>
 <body>
-<input id="showThemeType" /> <a href="#">分类管理</a> <input id="createUser" value="创建者" /><br />
-运维人员：<input id="showBackUser"/><input type="button" value="搜索" id="searchBtn" /><input type="button" value="导出" id="exportBtn">
+<select id="showThemeType">
+    <option value="0">请选择主题分类</option>
+    {% for type in themeType %}
+        <option value="{{ type.value }}">{{ type.text }}</option>
+    {% endfor %}
+</select>
+<a href="javascript:;" id="typeBtn">分类管理</a>
+<input id="createUser" value="创建者" /><br />
+<select id="showBackUser">
+    <option value="0">请选择运维人员</option>
+    {% for user in backUser %}
+        <option value="{{ user.value }}">{{ user.text }}</option>
+    {% endfor %}
+</select><input type="button" value="搜索" id="searchBtn" /><input type="button" value="导出" id="exportBtn" />
+<input type="button" value="添加" id="addBtn" />
 <table id="grid"></table>
+
+<div id="dialog-modal" title="分类管理">
+    当前分类列表：
+    <form method="post" id="classForm">
+        <input type="hidden" id="rowNum" name="rowNum" value="0" />
+        <div id="typeDiv">
+
+        </div>
+        <input id="newClassName" type="text" name="" value="" />
+        <input id="newClassId" type="hidden" name="" value="0" />
+    </form>
+    <br />
+    新分类，一旦建立，无法删除，只能变更分类名称<br />
+    <input type="button" value="保存" id="saveBtn" /><input type="button" value="关闭" id="closeDialogBtn" />
+</div>
+
 </body>
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/jquery.js"></script>
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-core.js"></script>
@@ -18,20 +47,26 @@
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-combo.js"></script>
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid.js"></script>
 <script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-grid-sort.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-draggable.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-position.js"></script>
+<script type="text/javascript" src="/static/operamasks-ui-2.0/development-bundle/ui/om-dialog.js"></script>
 <script type="text/javascript">
         $(document).ready(function() {
             //主题列表
             $('#grid').omGrid({
                 dataSource : 'searchTheme?method=fast&theme=init',
-                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
-                             {header : '图片', name : 'city', width : 50, align : 'left'},
-                             {header : '主题名称', name : 'address', align : 'left', width : 100},
-                    {header : '创建者', name : 'city', align : 'left', width : 100},
-                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
-                    {header : '打开次数', name : 'city', align : 'left', width : 50},
+                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center',sort:'clientSide'},
+                             {header : '图片', name : 'city', width : 50, align : 'left',sort:'',
+                             renderer:function(colValue, rowData, rowIndex){
+                            	 return '<img src="'+colValue+'" />';
+                             }},
+                    {header : '主题名称', name : 'address', align : 'left', width : 100,sort:''},
+                    {header : '创建者', name : 'address', align : 'left', width : 100,sort:'clientSide'},
+                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand',sort:''},
+                    {header : '打开次数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
                     {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
                     {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'clientSide'},
-                    {header : '操作', name : 'id', align : 'left', width : 150,
+                    {header : '操作', name : 'id', align : 'left', width : 150,sort:'',
                         renderer:function(colValue, rowData, rowIndex){
                             	 return '<a href="javascript:;" onclick="modifyTheme('+colValue+')">编辑</a>&nbsp;&nbsp;' +
                                          '<a href="javascript:;" onclick="hideTheme('+colValue+')">隐藏</a>';
@@ -39,15 +74,16 @@
 
             });
 
-            //主题分类
-            $('#showThemeType').omCombo({
-                dataSource : '/back_theme/showThemeType'
-            });
-            //运维人员
-            $('#showBackUser').omCombo({
-                dataSource : '/back_theme/showBackUser'
+            //分类管理
+            $( "#dialog-modal").omDialog({
+                autoOpen: false,
+                width:400,
+                height: 300,
+                modal: true
             });
         });
+
+    //搜索
     $("#searchBtn").click(function() {
         $('#grid').omGrid({
                 dataSource : 'searchTheme?method=fast&theme=search&createUser='+$("#createUser").val()+'&showThemeType='+$("#showThemeType").val()+'&showBackUser='+$("#showBackUser").val(),
@@ -70,19 +106,67 @@
 
     //编辑
     function modifyTheme(themeId){
+        window.location.href = "/back_theme/editThemePage?tid="+themeId;
+    }
+
+    //编辑
+    $("#addBtn").click(function() {
+        window.location.href = "/back_theme/addThemePage";
+    });
+
+    //隐藏
+    function hideTheme(themeId){
         $.ajax({
             url:"/back_theme/hideTheme",
             data:"tid="+themeId,
             success: function (result) {
-                alert(result.message)
+                alert(result.message);
             }
         });
     }
 
-    //隐藏
-    function hideTheme(themeId){
-        alert('隐藏'+themeId);
-    }
+    var row = 0;
+    //分类管理弹窗
+    $("#typeBtn").click(function(){
+        row = 0;
+        $( "#dialog-modal").omDialog('open');
+        $.ajax({
+            url:"/back_theme/initThemeType",
+            success:function(result){
+                $("#typeDiv").html('');
+                for(var i=0;i<result.length;i++){
+                    $("#typeDiv").append(
+                    "<input type=\"text\" name=\"className"+row+"\" value=\""+result[i].gname+"\" />" +
+                    "<input type=\"hidden\" name=\"classId"+row+"\" value=\""+result[i].glid+"\" />" +
+                    result[i].childNumber+"个主题<br />");
+                    row++;
+                }
+                $("#newClassId").attr('name','classId'+row);
+                $("#newClassName").attr('name','className'+row);
+                $("#newClassName").val('');
+            }
+        });
+    });
+
+    $("#saveBtn").click(function(){
+        $("#rowNum").val(row);
+        $.ajax({
+            type:"post",
+            url:"/back_theme/saveThemeType",
+            data:$("#classForm").serialize(),
+            contentType:"application/x-www-form-urlencoded; charset=utf-8",
+            success:function(result){
+                alert(result.message);
+                $("#closeDialogBtn").click();
+                $("#typeBtn").click();
+            }
+        });
+    });
+
+    $("#closeDialogBtn").click(function(){
+        $( "#dialog-modal").omDialog('close');
+    });
+
 
 </script>
 </html>

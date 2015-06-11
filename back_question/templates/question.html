@@ -7,52 +7,52 @@
     <link rel="stylesheet" type="text/css" href="/static/operamasks-ui-2.0/development-bundle/themes/default/om-grid-sort.css" />
 </head>
 <body>
-<select id="showThemeType">
-    <option value="0">全部分类</option>
+<select id="showThemeType" name="showThemeType">
+    <option value="">全部分类</option>
     {% for type in themeType %}
         <option value="{{ type.value }}">{{ type.text }}</option>
     {% endfor %}
 </select>
 
- <select id="showTheme">
-    <option value="0">全部主题</option>
+ <select id="theme" name="theme">
+    <option value="">全部主题</option>
     {% for tm in theme %}
         <option value="{{ tm.value }}">{{ tm.text }}</option>
     {% endfor %}
 </select>
 
-<select id="userType">
-     <option value="0">全部用户</option>
+<select id="userType" name="userType">
+     <option value="">全部用户</option>
      <option value="1">虚拟用户</option>
      <option value="2">真实用户</option>
 </select>
 
-<select id="userStatus">
-     <option value="0">全部</option>
+<select id="hide" name="hide">
+     <option value="">全部</option>
      <option value="1">隐藏状态</option>
      <option value="2">非隐藏状态</option>
 </select>
 
 <br />
 
-<input type="text" value="题目内容" />
-<input type="text" value="创建者昵称/ID" />
-<input type="text" value="题目描述" />
+<input type="text" value="题目内容" id="name" name="name" />
+<input type="text" value="创建者昵称/ID" id="uid" name="uid" />
+<input type="text" value="题目描述" id="describe" name="describe" />
 
 <br />
 
-发布时间：<input id="containerStart" />至<input id="containerEnd" />
-<input type="text" value="题目ID" />
+发布时间：<input id="publishStart" name="publishStart" />至<input id="publishEnd" name="publishEnd" />
+<input type="text" value="题目ID" name="qid" />
 
 <br />
 
-回答数量：<input type="text" value="0" />至<input type="text" value="9999999999" />
-分享数量：<input type="text" value="0" />至<input type="text" value="9999999999" />
+回答数量：<input type="text" value="0" id="ansStart" name="ansStart" />至<input type="text" value="99999" id="ansStop" name="ansStop" />
+分享数量：<input type="text" value="0" id="shareNum" name="shareNum" />至<input type="text" value="99999" id="shareEnd" name="shareEnd" />
 
 <br />
 
 <select id="showBackUser">
-    <option value="0">请选择运维人员</option>
+    <option value="">请选择运维人员</option>
     {% for user in backUser %}
         <option value="{{ user.value }}">{{ user.text }}</option>
     {% endfor %}
@@ -76,27 +76,11 @@
 <script type="text/javascript">
         $(document).ready(function() {
             //时间控件初始化
-            $('#containerStart').omCalendar({showTime : true});
-            $('#containerEnd').omCalendar({showTime : true});
-            //主题列表
-            $('#grid').omGrid({
-                dataSource : 'searchQuestion?method=fast&question=init',
-                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center',sort:'clientSide'},
-                             {header : '题目', name : 'city', width : 50, align : 'left',sort:''},
-                    {header : '主题', name : 'address', align : 'left', width : 100,sort:''},
-                    {header : '创建者', name : 'address', align : 'left', width : 100,sort:'clientSide'},
-                    {header : '题目描述', name : 'city', align : 'left', width : 'autoExpand',sort:''},
-                    {header : '发布时间', name : 'id', align : 'left', width : 50, sort:'clientSide'},
-                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'clientSide'},
-                        {header : '举报', name : 'id', align : 'left', width : 50, sort:'clientSide'},
-                        {header : '分享', name : 'id', align : 'left', width : 50, sort:'clientSide'},
-                    {header : '操作', name : 'id', align : 'left', width : 150,sort:'',
-                        renderer:function(colValue, rowData, rowIndex){
-                            	 return '<a href="javascript:;" onclick="modifyQuestion('+colValue+')">编辑</a>&nbsp;&nbsp;' +
-                                         '<a href="javascript:;" onclick="hideQuestion('+colValue+')">隐藏</a>';
-                             }} ]
-
-            });
+            $('#publishStart').omCalendar({showTime : true});
+            $('#publishEnd').omCalendar({showTime : true});
+            //题目列表
+            url = 'searchToTableData?method=fast';
+            showQuestions(url);
 
             //分类管理
             $( "#dialog-modal").omDialog({
@@ -107,20 +91,80 @@
             });
         });
 
+    function showQuestions(url){
+        $('#grid').omGrid({
+                limit : 5,
+                dataSource : url,
+                colModel : [
+                    {header : 'ID', name : 'qid', width : 80, align : 'center',sort:'clientSide'},
+                    {header : '题目', name : 'name', width : 150, align : 'center',sort:''},
+                    {header : '主题', name : 'theme', align : 'center', width : 80,sort:''},
+                    {header : '创建者', name : 'uid', align : 'center', width : 80,sort:'clientSide'},
+                    {header : '题目描述', name : 'describe', align : 'center', width : 'autoExpand',sort:''},
+                    {header : '发布时间', name : 'createDate', align : 'center', width : 120, sort:'clientSide'},
+                    {header : '回答数量', name : 'ansNum', align : 'center', width : 50, sort:'clientSide'},
+                    {header : '举报', name : 'report', align : 'center', width : 50, sort:'clientSide'},
+                    {header : '分享', name : 'hold', align : 'center', width : 50, sort:'clientSide'},
+                    {header : '操作', name : 'id', align : 'center', width : 80,sort:'',
+                        renderer:function(colValue, rowData, rowIndex){
+                            	 return '<a href="javascript:;" onclick="modifyQuestion('+colValue+')">编辑</a>&nbsp;&nbsp;' +
+                                         '<a href="javascript:;" onclick="hideQuestion('+colValue+')">隐藏</a>';
+                        }}
+                ]
+
+        });
+    }
+
     //搜索
     $("#searchBtn").click(function() {
-        $('#grid').omGrid({
-                dataSource : 'searchTheme?method=fast&theme=search&createUser='+$("#createUser").val()+'&showThemeType='+$("#showThemeType").val()+'&showBackUser='+$("#showBackUser").val(),
-                colModel : [ {header : 'ID', name : 'id', width : 20, align : 'center'},
-                             {header : '图片', name : 'city', width : 50, align : 'left'},
-                             {header : '主题名称', name : 'address', align : 'left', width : 100},
-                    {header : '创建者', name : 'city', align : 'left', width : 100},
-                    {header : '主题描述', name : 'city', align : 'left', width : 'autoExpand'},
-                    {header : '打开次数', name : 'city', align : 'left', width : 50},
-                    {header : '题目数', name : 'id', align : 'left', width : 50, sort:'clientSide'},
-                    {header : '回答数量', name : 'id', align : 'left', width : 50, sort:'serverSide'},
-                    {header : '操作', name : 'city', align : 'left', width : 150} ]
-            });
+        url = 'searchToTableData?method=fast';
+        if($("#showThemeType").val() != null){
+            url += '&showThemeType='+$("#showThemeType").val();
+        }
+        if($("#theme").val() != null){
+            url += '&theme='+$("#theme").val();
+        }
+        if($("#userType").val() != null){
+            url += '&userType='+$("#userType").val();
+        }
+        if($("#hide").val() != null){
+            url += '&hide='+$("#hide").val();
+        }
+        if($("#name").val() != null){
+            url += '&name='+$("#name").val();
+        }
+        if($("#uid").val() != null){
+            url += '&uid='+$("#uid").val();
+        }
+        if($("#describe").val() != null){
+            url += '&describe='+$("#describe").val();
+        }
+        if($("#publishStart").val() != null){
+            url += '&publishStart='+$("#publishStart").val();
+        }
+        if($("#publishEnd").val() != null){
+            url += '&publishEnd='+$("#publishEnd").val();
+        }
+        if($("#qid").val() != null){
+            url += '&qid='+$("#qid").val();
+        }
+        if($("#ansStart").val() != null){
+            url += '&ansStart='+$("#ansStart").val();
+        }
+        if($("#ansStop").val() != null){
+            url += '&ansStop='+$("#ansStop").val();
+        }
+        if($("#shareNum").val() != null){
+            url += '&shareNum='+$("#shareNum").val();
+        }
+        if($("#shareEnd").val() != null){
+            url += '&shareEnd='+$("#shareEnd").val();
+        }
+        if($("#showBackUser").val() != null){
+            url += '&showBackUser='+$("#showBackUser").val();
+        }
+
+        showQuestions(url);
     });
 
     //导出
