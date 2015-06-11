@@ -78,5 +78,7 @@ urlpatterns = [
     url(r'^p2pmsg/realUserList/$','p2pmsg.views.realUserList'),
     url(r'^p2pmsg/p2pmessage/$','p2pmsg.views.p2pmessage'),
     url(r'^p2pmsg/viranswer/$','p2pmsg.views.viranswer'),
-    url(r'p2pmsg/reanswer/$','p2pmsg.views.reanswer')
+    url(r'p2pmsg/reanswer/$','p2pmsg.views.reanswer'),
+    url(r'^p2pmsg/guanli/$','p2pmsg.views.guanli'),
+    url(r'^p2pmsg/yunweiList/$','p2pmsg.views.yunweiList'),
 ]

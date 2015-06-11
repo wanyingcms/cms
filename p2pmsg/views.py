@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse
 import json
 from django import forms
+from back_user.models import *
 
 # Create your views here.
 
@@ -83,7 +84,7 @@ class AnswerForm(forms.Form):
     imagefile = forms.ImageField(required=False)
 
 
-
+'''回答'''
 def reanswer(req):
     print "aaaaaaaa"
     if req.method == 'POST':
@@ -108,5 +109,50 @@ def reanswer(req):
                 des_origin_file.close()
 
     return HttpResponse("{result:1}")
+
+
+
+def guanli(req):
+
+    print "msg_admin............."
+    return render_to_response("p2padmin.html")
+
+
+
+def yunweiList(req):
+
+    users = BackuserUserinfo.objects.all()
+    userJson = []
+    for user in users:
+        print "user====",user.username
+        userJson.append({"text":user.username,"value":user.id})
+
+    userJsonStr = json.dumps(userJson)
+    print "jsonStr==",userJsonStr
+    return HttpResponse(userJsonStr,content_type="application/json")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

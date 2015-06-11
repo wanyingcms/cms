@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            $('#container1').omCalendar();
+            $('#container2').omCalendar();
+            $('#combol3').omCombo({
+
+                dataSource : '/p2pmsg/yunweiList/',
+                //multi : true,
+                // optionField:function(data,index){
+                //    return '<font color="red">'+index+'：</font>'+data.text+'('+data.value+')';
+                // },
+                emptyText:'select one option!',
+                //value:'1',
+                editable:false,
+                lazyLoad:true,
+                listMaxHeight:440
+
+            });
+
+        });
+
+    </script>
+
+</head>
+<body>
+    <div>
+        <input value="A用户昵称"/> <input value="B用户昵称"/><br>
+        时间：
+        <input id="container1" /> - <input id="container2" />
+        运维人员：<input id="combol3"/>
+
+        <input type="button" value="搜索">
+
+
+    </div>
+
+</body>
+</html>
